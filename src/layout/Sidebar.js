@@ -11,7 +11,7 @@ const Sidebar = ({ isOpen, onClose }) => {
         return (
             <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
                 <div className="sidebar-header">
-                    <img src="/logo512.png" alt="Service Gateway Logo" className="sidebar-logo" />
+                    <img src={process.env.PUBLIC_URL + "/logo512.png"} alt="Service Gateway Logo" className="sidebar-logo" />
                 </div>
                 <nav className="sidebar-nav">
                     {Array.from(new Array(6)).map((_, i) => (
@@ -28,7 +28,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     return (
         <aside className={`sidebar ${isOpen ? 'open' : ''}`}>
             <div className="sidebar-header">
-                <img src="/logo512.png" alt="Service Gateway Logo" className="sidebar-logo" />
+                <img src={process.env.PUBLIC_URL + "/logo512.png"} alt="Service Gateway Logo" className="sidebar-logo" />
                 {/* <button className="sidebar-close" onClick={onClose}>
                     <X size={24} />
                 </button> */}

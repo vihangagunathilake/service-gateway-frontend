@@ -4,7 +4,7 @@ let config = {
 
 export const loadConfig = async () => {
     try {
-        const response = await fetch('/configuration.json');
+        const response = await fetch('/service-gateway/configuration.json');
         const configData = await response.json();
         config = { ...config, ...configData };
         return config;

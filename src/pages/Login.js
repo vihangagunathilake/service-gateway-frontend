@@ -51,7 +51,7 @@ const Login = () => {
         <div className="login-container">
             <div className="login-card">
                 <div className="login-header">
-                    <img src="/logo512.png" alt="Service Gateway Logo" className="login-logo" />
+                    <img src={process.env.PUBLIC_URL + "/logo512.png"} alt="Service Gateway Logo" className="login-logo" />
                     {/* <h2>Welcome Back</h2> */}
                     <p>Please sign in to continue</p>
                 </div>

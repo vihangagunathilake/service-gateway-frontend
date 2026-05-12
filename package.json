@@ -1,7 +1,7 @@
 {
   "name": "service-gateway-frontend",
   "version": "1.0.14",
-  "homepage": "/",
+  "homepage": "/service-gateway",
   "private": true,
   "dependencies": {
     "@emotion/react": "^11.14.0",

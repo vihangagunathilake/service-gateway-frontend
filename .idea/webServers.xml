@@ -3,11 +3,10 @@
   <component name="WebServers">
     <option name="servers">
       <webServer id="9cf8821a-bc11-4bba-b350-516fb2283820" name="185.182.184.228">
-        <fileTransfer host="185.182.184.228" port="22" rootFolder="/usr/share/nginx" accessType="SFTP">
+        <fileTransfer accessType="SFTP" host="185.182.184.228" port="22" sshConfigId="dc515b30-f7af-4513-a40d-e4a8a11337a3" sshConfig="185.182.184.228">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
           </advancedOptions>
-          <option name="port" value="22" />
         </fileTransfer>
       </webServer>
     </option>
