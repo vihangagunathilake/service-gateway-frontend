@@ -5,7 +5,7 @@ import { useUser } from '../context/UserContext';
 import { Skeleton } from '@mui/material';
 
 const Sidebar = ({ isOpen, onClose }) => {
-    const { hasPermission, loading } = useUser();
+    const { hasPermissionAccess, hasPermission, loading } = useUser();
 
     if (loading) {
         return (
@@ -43,15 +43,17 @@ const Sidebar = ({ isOpen, onClose }) => {
                     <span>Dashboard</span>
                 </NavLink>
 
-                <NavLink
-                    to="/jobs"
-                    className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-                    onClick={() => window.innerWidth < 1024 && onClose()}
-                >
-                    <ClipboardList size={20} />
-                    <span>Jobs</span>
-                </NavLink>
-                {hasPermission('Notification Management') && (
+                {hasPermission('Jobs Management') && (
+                    <NavLink
+                        to="/jobs"
+                        className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
+                        onClick={() => window.innerWidth < 1024 && onClose()}
+                    >
+                        <ClipboardList size={20} />
+                        <span>Jobs</span>
+                    </NavLink>
+                )}
+                {/* {hasPermission('Notification Management') && (
                     <NavLink
                         to="/notifications"
                         className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
@@ -60,9 +62,9 @@ const Sidebar = ({ isOpen, onClose }) => {
                         <Bell size={20} />
                         <span>Notifications</span>
                     </NavLink>
-                )}
+                )} */}
 
-                {hasPermission('User Management') && (
+                {hasPermissionAccess('User Management', 'getAll') && (
                     <NavLink
                         to="/users"
                         className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
@@ -73,7 +75,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     </NavLink>
                 )}
 
-                {hasPermission('Role Management') && (
+                {hasPermissionAccess('Role Management', 'getAll') && (
                     <NavLink
                         to="/roles"
                         className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
@@ -84,7 +86,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     </NavLink>
                 )}
 
-                {hasPermission('Centers Management') && (
+                {hasPermissionAccess('Centers Management', 'getAll') && (
                     <NavLink
                         to="/service-centers"
                         className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
@@ -95,7 +97,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     </NavLink>
                 )}
 
-                {hasPermission('Services Management') && (
+                {hasPermissionAccess('Services Management', 'getAll') && (
                     <NavLink
                         to="/services"
                         className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
@@ -106,7 +108,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     </NavLink>
                 )}
 
-                {hasPermission('Cluster Management') && (
+                {hasPermissionAccess('Cluster Management', 'getAll') && (
                     <NavLink
                         to="/clusters"
                         className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
@@ -117,7 +119,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                     </NavLink>
                 )}
 
-                {hasPermission('Holiday Management') && (
+                {hasPermissionAccess('Holiday Management', 'getAll') && (
                     <NavLink
                         to="/calendar"
                         className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}

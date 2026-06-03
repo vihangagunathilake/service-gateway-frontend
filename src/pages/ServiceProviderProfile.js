@@ -5,6 +5,7 @@ import { getServiceProviderProfile, updateServiceProviderProfile, getSummarizedS
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { Skeleton } from '@mui/material';
+import { useUser } from '../context/UserContext';
 
 const ServiceProviderProfile = () => {
     const navigate = useNavigate();
@@ -27,6 +28,16 @@ const ServiceProviderProfile = () => {
     const [serviceCenters, setServiceCenters] = useState([]);
 
     const fetchInitiated = useRef(false);
+
+    const { hasPermissionAccess } = useUser();
+
+    const canEditServiceProvider = () =>
+        hasPermissionAccess(
+            'Service Provider',
+            'updating'
+        );
+
+    const allowEditServiceProvider = canEditServiceProvider();
 
     useEffect(() => {
         if (!fetchInitiated.current) {
@@ -138,10 +149,17 @@ const ServiceProviderProfile = () => {
                     <p className="subtitle">Manage provider details and service centers</p>
                 </div>
                 <div className="header-actions">
-                    <button className="primary-btn edit-provider-btn" onClick={handleEditClick}>
-                        <Edit2 size={18} />
-                        <span>Edit Profile</span>
-                    </button>
+                    {allowEditServiceProvider ?
+                        <button className="primary-btn edit-provider-btn" onClick={handleEditClick}>
+                            <Edit2 size={18} />
+                            <span>Edit Profile</span>
+                        </button>
+                        :
+                        <button className="primary-btn-disabled" onClick={() => { toast.warn("Required Provider Edit Permission"); }}>
+                            <Edit2 size={18} />
+                            <span>Edit Profile</span>
+                        </button>
+                    }
                 </div>
             </div>
 
@@ -150,7 +168,7 @@ const ServiceProviderProfile = () => {
                 {/* Left Column: Provider Identity */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     <div className="content-card" style={{ padding: '0', overflow: 'hidden', textAlign: 'center' }}>
-                        <div style={{ background: 'linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)', height: '140px' }}></div>
+                        <div style={{ background: 'linear-gradient(135deg, #F97316 0%, #F59E0B 100%)', height: '140px' }}></div>
                         <div style={{ marginTop: '-70px', padding: '0 1.5rem 2rem' }}>
                             <div style={{
                                 width: '140px',

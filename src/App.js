@@ -25,33 +25,33 @@ function App() {
   return (
     <ThemeProvider>
       <ToastContainer position="bottom-right" autoClose={3000} theme="light" hideProgressBar closeButton={false} />
-        <Router basename="/service-gateway">
-          <Routes>
-            <Route path="/login" element={<Login />} />
+      <Router basename="/service-gateway">
+        <Routes>
+          <Route path="/login" element={<Login />} />
 
-            <Route path="/" element={
-              <ProtectedRoute>
-                <Layout />
-              </ProtectedRoute>
-            }>
-              <Route index element={<Navigate to="/login" replace />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="branch-dashboard" element={<BranchDashboard />} />
-              <Route path="jobs" element={<Jobs />} />
-              <Route path="jobs/:id" element={<JobDetail />} />
-              <Route path="user-profile" element={<UserProfile />} />
-              <Route path="service-provider-profile" element={<ServiceProviderProfile />} />
-              <Route path="users" element={<Users />} />
-              <Route path="roles" element={<Roles />} />
-              <Route path="service-centers" element={<ServiceCenters />} />
-              <Route path="service-centers/:id" element={<ServiceCenter />} />
-              <Route path="services" element={<Services />} />
-              <Route path="clusters" element={<Clusters />} />
-              <Route path="calendar" element={<Calendar />} />
-              {/* Settings route removed as it uses Modal now */}
-            </Route>
-          </Routes>
-        </Router>
+          <Route path="/" element={
+            <ProtectedRoute>
+              <Layout />
+            </ProtectedRoute>
+          }>
+            <Route index element={<Navigate to="/login" replace />} />
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="branch-dashboard" element={<BranchDashboard />} />
+            <Route path="jobs" element={<Jobs />} />
+            <Route path="jobs/:id" element={<JobDetail />} />
+            <Route path="user-profile" element={<UserProfile />} />
+            <Route path="service-provider-profile" element={<ServiceProviderProfile />} />
+            <Route path="users" element={<Users />} />
+            <Route path="roles" element={<Roles />} />
+            <Route path="service-centers" element={<ServiceCenters />} />
+            <Route path="service-centers/:id" element={<ServiceCenter />} />
+            <Route path="services" element={<Services />} />
+            <Route path="clusters" element={<Clusters />} />
+            <Route path="calendar" element={<Calendar />} />
+            {/* Settings route removed as it uses Modal now */}
+          </Route>
+        </Routes>
+      </Router>
     </ThemeProvider>
   );
 }

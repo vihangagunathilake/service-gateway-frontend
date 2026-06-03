@@ -10,8 +10,10 @@ import NotificationAccessModal from '../components/NotificationAccessModal';
 import { Skeleton } from '@mui/material';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 
 const Users = () => {
+    const { hasPermissionAccess } = useUser();
     const navigate = useNavigate();
     const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -49,6 +51,49 @@ const Users = () => {
     });
 
     const lastFetchParams = useRef(null);
+
+    const canAddUser = () =>
+        hasPermissionAccess(
+            'User Management',
+            'adding'
+        );
+
+    const canUpdateUser = () =>
+        hasPermissionAccess(
+            'User Management',
+            'updating'
+        );
+
+    const canDeleteUser = () =>
+        hasPermissionAccess(
+            'User Management',
+            'deleting'
+        );
+
+    const canGetUser = () =>
+        hasPermissionAccess(
+            'User Management',
+            'getting'
+        );
+
+    const canDecryptData = () =>
+        hasPermissionAccess(
+            'Decrypt Data',
+            'getting'
+        );
+
+    const getAllocationData = () =>
+        hasPermissionAccess(
+            'Allocate Data',
+            'getting'
+        );
+
+    const allowAddUser = canAddUser();
+    const allowUpdateUser = canUpdateUser();
+    const allowDeleteUser = canDeleteUser();
+    const allowGetUser = canGetUser();
+    const allowDecryptData = canDecryptData();
+
     useEffect(() => {
         const currentParams = JSON.stringify({ currentPage, searchQuery, searchFilter });
         if (lastFetchParams.current !== currentParams) {
@@ -327,10 +372,23 @@ const Users = () => {
                     <p className="subtitle">Manage users of system and employees</p>
                 </div>
                 <div className="header-actions">
-                    <button className="primary-btn" onClick={handleAddUser}>
-                        <Plus size={18} />
-                        <span>Add User</span>
-                    </button>
+                    {
+                        allowAddUser ? (
+                            <button className="primary-btn" onClick={handleAddUser}>
+                                <Plus size={18} />
+                                <span>Add User</span>
+                            </button>
+                        ) : (
+                            <button
+                                className="primary-btn-disabled"
+                                onClick={() => { toast.warn("Required User Add Permission"); }}
+                            >
+                                <Plus size={18} />
+                                <span>Add User</span>
+                            </button>
+
+                        )
+                    }
                 </div>
             </div>
 
@@ -425,18 +483,40 @@ const Users = () => {
                             >
                                 None
                             </button>
-                            <button
-                                className={`filter-btn ${searchFilter === 'nic' ? 'active' : ''}`}
-                                onClick={() => setSearchFilter('nic')}
-                            >
-                                NIC
-                            </button>
-                            <button
-                                className={`filter-btn ${searchFilter === 'contact' ? 'active' : ''}`}
-                                onClick={() => setSearchFilter('contact')}
-                            >
-                                Contact
-                            </button>
+
+                            {allowDecryptData ? (
+                                <button
+                                    className={`filter-btn ${searchFilter === 'nic' ? 'active' : ''}`}
+                                    onClick={() => setSearchFilter('nic')}
+                                >
+                                    NIC
+                                </button>
+                            ) : (
+
+                                <button
+                                    className={`filter-btn-disabled nic`}
+                                    onClick={() => { toast.warn("Required Decrypt Get Permission"); }}
+                                >
+                                    NIC
+                                </button>
+
+                            )}
+
+                            {allowDecryptData ? (
+                                <button
+                                    className={`filter-btn ${searchFilter === 'contact' ? 'active' : ''}`}
+                                    onClick={() => setSearchFilter('contact')}
+                                >
+                                    Contact
+                                </button>
+                            ) : (
+                                <button
+                                    className={`filter-btn-disabled contact`}
+                                    onClick={() => { toast.warn("Required Decrypt Get Permission"); }}
+                                >
+                                    Contact
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -510,7 +590,13 @@ const Users = () => {
                                                 {user.contact || user.mobile} */}
                                                 {
                                                     user.mobile !== null && user.mobile !== "" ? (
-                                                        <button className='icon-action-btn text-success' onClick={() => handleDecrypt(user.mobile)}>View Contact</button>
+                                                        allowDecryptData ? (
+                                                            <button className='icon-action-btn text-success' onClick={() => handleDecrypt(user.mobile)}>View Contact</button>
+                                                        ) : (
+                                                            <button className='icon-action-btn-disabled'
+                                                                onClick={() => { toast.warn("Required Decrypt Get Permission"); }}
+                                                            >Not allowed</button>
+                                                        )
                                                     ) : (
                                                         <span> -- </span>
                                                     )
@@ -522,7 +608,14 @@ const Users = () => {
                                                 {/* <FileText size={14} className="text-muted" /> */}
                                                 {
                                                     user.nic && user.nic !== "" ? (
-                                                        <button className='icon-action-btn text-success' onClick={() => handleDecrypt(user.nic)}>View NIC</button>
+                                                        allowDecryptData ? (
+                                                            <button className='icon-action-btn text-success' onClick={() => handleDecrypt(user.nic)}>View NIC</button>
+                                                        ) : (
+                                                            <button className='icon-action-btn-disabled'
+                                                                onClick={() => { toast.warn("Required Decrypt Get Permission"); }}
+                                                            >Not allowed</button>
+                                                        )
+
                                                     ) : (
                                                         <span> -- </span>
                                                     )
@@ -581,27 +674,51 @@ const Users = () => {
                                                     </div>
                                                 )}
 
-                                                <button
+                                                {/* <button
                                                     className="icon-action-btn text-info"
                                                     title="Notification Access"
                                                     onClick={() => handleNotificationAccessClick(user)}
                                                 >
                                                     <Bell size={16} />
-                                                </button>
-                                                <button
-                                                    className="icon-action-btn"
-                                                    title="Edit"
-                                                    onClick={() => handleEditUser(user)}
-                                                >
-                                                    <Edit2 size={16} />
-                                                </button>
-                                                <button
-                                                    className="icon-action-btn text-danger mobile-hidden"
-                                                    title="Delete"
-                                                    onClick={() => handleDeleteClick(user)}
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
+                                                </button> */}
+                                                {
+                                                    allowUpdateUser ? (
+                                                        <button
+                                                            className="icon-action-btn"
+                                                            title="Edit"
+                                                            onClick={() => handleEditUser(user)}
+                                                        >
+                                                            <Edit2 size={16} />
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            className="icon-action-btn-disabled"
+                                                            title="Edit"
+                                                            onClick={() => { toast.warn("Required User Update Permission"); }}
+                                                        >
+                                                            <Edit2 size={16} />
+                                                        </button>
+                                                    )
+                                                }
+                                                {
+                                                    allowDeleteUser ? (
+                                                        <button
+                                                            className="icon-action-btn text-danger mobile-hidden"
+                                                            title="Delete"
+                                                            onClick={() => handleDeleteClick(user)}
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    ) : (
+                                                        <button
+                                                            className="icon-action-btn-disabled"
+                                                            title="Delete"
+                                                            onClick={() => { toast.warn("Required User Delete Permission"); }}
+                                                        >
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    )
+                                                }
                                             </div>
                                         </td>
                                     </tr>

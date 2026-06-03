@@ -22,6 +22,12 @@ const RoleModal = ({ isOpen, onClose, role, onSave }) => {
     const [isSaving, setIsSaving] = useState(false);
     const dropdownRef = useRef(null);
 
+    const getPermissionName = (permission) => (
+        typeof permission === 'object' && permission !== null
+            ? permission.name || permission.permissionName || permission.permission || ''
+            : permission
+    );
+
     // Fetch permissions from API
     useEffect(() => {
         const fetchPermissions = async () => {
@@ -93,7 +99,9 @@ const RoleModal = ({ isOpen, onClose, role, onSave }) => {
             if (role) {
                 setRoleName(role.name);
                 // Ensure "Permit This" is always included
-                const perms = role.permissions || [];
+                const perms = (role.permissions || [])
+                    .map(getPermissionName)
+                    .filter(Boolean);
                 if (!perms.includes('Permit This')) {
                     perms.push('Permit This');
                 }
@@ -263,9 +271,10 @@ const RoleModal = ({ isOpen, onClose, role, onSave }) => {
         }
     };
 
-    const filteredPermissions = permissionsList.filter(perm =>
-        perm.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredPermissions = permissionsList.filter(perm => {
+        const permissionName = getPermissionName(perm);
+        return permissionName.toLowerCase().includes(searchTerm.toLowerCase());
+    });
 
     const filteredNotifications = notificationsList.filter(type => {
         const name = typeof type === 'object' ? type.name || type.type : type;
@@ -330,9 +339,10 @@ const RoleModal = ({ isOpen, onClose, role, onSave }) => {
                             ) : filteredPermissions.length > 0 ? (
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.8rem' }}>
                                     {filteredPermissions.map(perm => {
-                                        const isSelected = selectedPermissions.includes(perm);
+                                        const permissionName = getPermissionName(perm);
+                                        const isSelected = selectedPermissions.includes(permissionName);
                                         return (
-                                            <label key={perm} style={{
+                                            <label key={permissionName} style={{
                                                 display: 'flex',
                                                 alignItems: 'center',
                                                 gap: '0.6rem',
@@ -345,12 +355,12 @@ const RoleModal = ({ isOpen, onClose, role, onSave }) => {
                                             }}>
                                                 <input
                                                 type="checkbox"
-                                                checked={isSelected || perm === 'Permit This'}
-                                                onChange={() => togglePermission(perm)}
-                                                disabled={perm === 'Permit This'}
-                                                style={{ cursor: perm === 'Permit This' ? 'not-allowed' : 'pointer', width: '16px', height: '16px', accentColor: '#3b82f6', flexShrink: 0 }}
+                                                checked={isSelected || permissionName === 'Permit This'}
+                                                onChange={() => togglePermission(permissionName)}
+                                                disabled={permissionName === 'Permit This'}
+                                                style={{ cursor: permissionName === 'Permit This' ? 'not-allowed' : 'pointer', width: '16px', height: '16px', accentColor: '#3b82f6', flexShrink: 0 }}
                                             />
-                                            <span style={{ fontSize: '0.9rem', wordBreak: 'break-word', lineHeight: '1.4' }}>{perm}</span>
+                                            <span style={{ fontSize: '0.9rem', wordBreak: 'break-word', lineHeight: '1.4' }}>{permissionName}</span>
                                             </label>
                                         );
                                     })}

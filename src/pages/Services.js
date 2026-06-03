@@ -7,9 +7,13 @@ import ServiceModal from '../components/ServiceModal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import InfoModal from '../components/InfoModal';
 import { getServices, deleteService, getAssignedPointsForService, unassignServiceFromPoint } from '../services/serviceProviderService';
+import { useUser } from '../context/UserContext';
 
 const Services = () => {
     const navigate = useNavigate();
+
+    const { hasPermissionAccess } = useUser();
+
     const [services, setServices] = useState([]);
     const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
@@ -28,6 +32,28 @@ const Services = () => {
     const [unassigningId, setUnassigningId] = useState(null);
 
     const itemsPerPage = 10;
+
+    const canAddService = () =>
+        hasPermissionAccess(
+            'Services Management',
+            'adding'
+        );
+
+    const canDeleteService = () =>
+        hasPermissionAccess(
+            'Services Management',
+            'deleting'
+        );
+
+    const canEditService = () =>
+        hasPermissionAccess(
+            'Services Management',
+            'updating'
+        );
+
+    const allowAddService = canAddService();
+    const allowDeleteService = canDeleteService();
+    const allowEditService = canEditService();
 
     const fetchServices = useCallback(async () => {
         setLoading(true);
@@ -258,10 +284,17 @@ const Services = () => {
                     <p className="subtitle">Manage services offered by the provider</p>
                 </div>
                 <div className="header-actions">
-                    <button className="primary-btn" onClick={handleAddClick}>
-                        <Plus size={18} />
-                        <span>Add Service</span>
-                    </button>
+                    {allowAddService ?
+                        <button className="primary-btn" onClick={handleAddClick}>
+                            <Plus size={18} />
+                            <span>Add Service</span>
+                        </button> :
+                        <button className="primary-btn-disabled"
+                            onClick={() => { toast.warn("Required Services Add Permission"); }}>
+                            <Plus size={18} />
+                            <span>Add Service</span>
+                        </button>
+                    }
                 </div>
             </div>
 
@@ -407,12 +440,23 @@ const Services = () => {
                                                     {/* <button className="icon-action-btn text-primary" title="View" onClick={() => handleViewClick(service)}>
                                                         <Eye size={16} />
                                                     </button> */}
-                                                    <button className="icon-action-btn" title="Edit" onClick={() => handleEditClick(service)}>
-                                                        <Edit2 size={16} />
-                                                    </button>
-                                                    <button className="icon-action-btn text-danger mobile-hidden" title="Delete" onClick={() => handleDeleteClick(service.id, service.name)}>
-                                                        <Trash2 size={16} />
-                                                    </button>
+                                                    {allowEditService ?
+                                                        <button className="icon-action-btn" title="Edit" onClick={() => handleEditClick(service)}>
+                                                            <Edit2 size={16} />
+                                                        </button> :
+                                                        <button className="icon-action-btn-disabled" title="Edit" onClick={() => toast.warn("Required Services Edit Permission")}>
+                                                            <Edit2 size={16} />
+                                                        </button>
+                                                    }
+
+                                                    {allowDeleteService ?
+                                                        <button className="icon-action-btn text-danger mobile-hidden" title="Delete" onClick={() => handleDeleteClick(service.id, service.name)}>
+                                                            <Trash2 size={16} />
+                                                        </button> :
+                                                        <button className="icon-action-btn-disabled" title="Delete" onClick={() => toast.warn("Required Services Delete Permission")}>
+                                                            <Trash2 size={16} />
+                                                        </button>
+                                                    }
                                                 </div>
                                             </td>
                                         </tr>

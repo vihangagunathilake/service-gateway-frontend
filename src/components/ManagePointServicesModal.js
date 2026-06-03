@@ -4,6 +4,8 @@ import { Skeleton } from '@mui/material';
 import { toast } from 'react-toastify';
 import { getAvailableServicesForPoint, getAssignedServicesForPoint, assignServiceToPoint, unassignServiceFromPoint } from '../services/serviceProviderService';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
+import Tooltip from '@mui/material/Tooltip';
 
 const ManagePointServicesModal = ({ isOpen, onClose, servicePoint, assignedServices = [], onUpdateServices }) => {
     const navigate = useNavigate();
@@ -13,6 +15,15 @@ const ManagePointServicesModal = ({ isOpen, onClose, servicePoint, assignedServi
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
     const [processingId, setProcessingId] = useState(null);
+    const { hasPermissionAccess } = useUser();
+
+    const assignServicesToPoint = () =>
+        hasPermissionAccess(
+            'Points Management',
+            'assigning'
+        );
+
+    const allowAssignServicesToPoint = assignServicesToPoint();
 
     useEffect(() => {
         if (isOpen && servicePoint) {
@@ -208,27 +219,53 @@ const ManagePointServicesModal = ({ isOpen, onClose, servicePoint, assignedServi
                                                 </div>
                                             </div>
                                             {(index === 0 || index === localAssignedServices.length - 1) && (
-                                                <button
-                                                    className="icon-action-btn text-danger"
-                                                    onClick={() => handleRemoveService(service)}
-                                                    disabled={processingId === service.id}
-                                                    title="Remove service"
-                                                    style={{
-                                                        marginLeft: '1rem',
-                                                        width: '32px',
-                                                        height: '32px',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        transition: 'all 0.3s ease'
-                                                    }}
-                                                >
-                                                    {processingId === service.id ? (
-                                                        <Loader2 size={16} className="animate-spin" />
-                                                    ) : (
-                                                        <Trash2 size={16} />
-                                                    )}
-                                                </button>
+                                                <>
+                                                    {
+                                                        allowAssignServicesToPoint ? (
+                                                            <button
+                                                                className="icon-action-btn text-danger"
+                                                                onClick={() => handleRemoveService(service)}
+                                                                disabled={processingId === service.id}
+                                                                title="Remove service"
+                                                                style={{
+                                                                    marginLeft: '1rem',
+                                                                    width: '32px',
+                                                                    height: '32px',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    transition: 'all 0.3s ease'
+                                                                }}
+                                                            >
+                                                                {processingId === service.id ? (
+                                                                    <Loader2 size={16} className="animate-spin" />
+                                                                ) : (
+                                                                    <Trash2 size={16} />
+                                                                )}
+                                                            </button>
+                                                        ) : (
+                                                            <button
+                                                                className="icon-action-btn-disabled text-danger"
+                                                                onClick={() => { toast.warn("Need Points Assign Permission"); }}
+                                                                title="Remove service"
+                                                                style={{
+                                                                    marginLeft: '1rem',
+                                                                    width: '32px',
+                                                                    height: '32px',
+                                                                    display: 'flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    transition: 'all 0.3s ease'
+                                                                }}
+                                                            >
+                                                                {processingId === service.id ? (
+                                                                    <Loader2 size={16} className="animate-spin" />
+                                                                ) : (
+                                                                    <Trash2 size={16} />
+                                                                )}
+                                                            </button>
+                                                        )}
+                                                </>
                                             )}
                                         </div>
                                     ))
@@ -348,36 +385,71 @@ const ManagePointServicesModal = ({ isOpen, onClose, servicePoint, assignedServi
                                                 </div>
                                             </div>
                                             {(localAssignedServices.length === 0 || index === 0) && (
-                                                <button
-                                                    className="secondary-btn"
-                                                    onClick={() => handleAddService(service)}
-                                                    disabled={processingId === service.id}
-                                                    style={{
-                                                        padding: '0.4rem 0.75rem',
-                                                        fontSize: '0.85rem',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        gap: '0.4rem',
-                                                        marginLeft: '1rem',
-                                                        minWidth: '85px',
-                                                        justifyContent: 'center',
-                                                        transition: 'all 0.3s ease',
-                                                        position: 'relative',
-                                                        overflow: 'hidden'
-                                                    }}
-                                                >
-                                                    {processingId === service.id ? (
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                                                            <Loader2 size={14} className="animate-spin" />
-                                                            <span style={{ opacity: 0.7 }}>Adding</span>
-                                                        </div>
+                                                <>
+                                                    {allowAssignServicesToPoint ? (
+                                                        <button
+                                                            className="secondary-btn"
+                                                            onClick={() => handleAddService(service)}
+                                                            disabled={processingId === service.id}
+                                                            style={{
+                                                                padding: '0.4rem 0.75rem',
+                                                                fontSize: '0.85rem',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '0.4rem',
+                                                                marginLeft: '1rem',
+                                                                minWidth: '85px',
+                                                                justifyContent: 'center',
+                                                                transition: 'all 0.3s ease',
+                                                                position: 'relative',
+                                                                overflow: 'hidden'
+                                                            }}
+                                                        >
+                                                            {processingId === service.id ? (
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                    <Loader2 size={14} className="animate-spin" />
+                                                                    <span style={{ opacity: 0.7 }}>Adding</span>
+                                                                </div>
+                                                            ) : (
+                                                                <>
+                                                                    <Plus size={14} />
+                                                                    Add
+                                                                </>
+                                                            )}
+                                                        </button>
                                                     ) : (
-                                                        <>
-                                                            <Plus size={14} />
-                                                            Add
-                                                        </>
+
+                                                        <button
+                                                            className="secondary-btn-disabled"
+                                                            onClick={() => { toast.warn("Need Points Assign Permission"); }}
+                                                            style={{
+                                                                padding: '0.4rem 0.75rem',
+                                                                fontSize: '0.85rem',
+                                                                display: 'flex',
+                                                                alignItems: 'center',
+                                                                gap: '0.4rem',
+                                                                marginLeft: '1rem',
+                                                                minWidth: '85px',
+                                                                justifyContent: 'center',
+                                                                transition: 'all 0.3s ease',
+                                                                position: 'relative',
+                                                                overflow: 'hidden'
+                                                            }}
+                                                        >
+                                                            {processingId === service.id ? (
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                                    <Loader2 size={14} className="animate-spin" />
+                                                                    <span style={{ opacity: 0.7 }}>Adding</span>
+                                                                </div>
+                                                            ) : (
+                                                                <>
+                                                                    <Plus size={14} />
+                                                                    Add
+                                                                </>
+                                                            )}
+                                                        </button>
                                                     )}
-                                                </button>
+                                                </>
                                             )}
                                         </div>
                                     ))
@@ -407,7 +479,7 @@ const ManagePointServicesModal = ({ isOpen, onClose, servicePoint, assignedServi
                     </button>
                 </div>
             </div>
-        </div>
+        </div >
     );
 };
 

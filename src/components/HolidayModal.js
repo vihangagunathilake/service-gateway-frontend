@@ -5,7 +5,7 @@ import { addHoliday } from '../services/holidayService';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
 
-const HolidayModal = ({ isOpen, onClose, onSave, selectedDate }) => {
+const HolidayModal = ({ isOpen, onClose, onSave, selectedDate, allowAddHolidays }) => {
     const navigate = useNavigate();
     const [isSaving, setIsSaving] = useState(false);
     const [formData, setFormData] = useState({
@@ -104,7 +104,7 @@ const HolidayModal = ({ isOpen, onClose, onSave, selectedDate }) => {
 
                         <div className="modal-footer" style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>
                             <button type="button" className="secondary-btn" onClick={onClose} disabled={isSaving}>Cancel</button>
-                            <button type="submit" className="primary-btn" disabled={isSaving}>
+                            {allowAddHolidays ? <button type="submit" className="primary-btn" disabled={isSaving}>
                                 {isSaving ? (
                                     <>
                                         <Loader2 className="animate-spin" size={16} />
@@ -113,7 +113,11 @@ const HolidayModal = ({ isOpen, onClose, onSave, selectedDate }) => {
                                 ) : (
                                     'Create Holiday'
                                 )}
-                            </button>
+                            </button> :
+                                <button type="submit" className="primary-btn-disabled" onClick={() => toast.warn("Required Holiday Add Permission")}>
+                                    Create Holiday
+                                </button>}
+
                         </div>
                     </form>
                 </div>

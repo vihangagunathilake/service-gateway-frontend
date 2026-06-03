@@ -7,6 +7,7 @@ import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import HolidayModal from '../components/HolidayModal';
 import CommonHolidayModal from '../components/CommonHolidayModal';
+import { useUser } from '../context/UserContext';
 
 const Calendar = () => {
     const { theme } = useTheme();
@@ -18,6 +19,24 @@ const Calendar = () => {
     const [holidays, setHolidays] = useState({}); // Now storing date -> name map
     const [activeWeekdays, setActiveWeekdays] = useState({}); // { 'Sunday': true, ... }
     const [loading, setLoading] = useState(true);
+
+    const { hasPermissionAccess } = useUser();
+
+    const canAddHoliday = () =>
+        hasPermissionAccess(
+            'Holiday Management',
+            'adding'
+        );
+
+    const canUpdateHoliday = () =>
+        hasPermissionAccess(
+            'Holiday Management',
+            'updating'
+        );
+
+    const allowAddHolidays = canAddHoliday();
+
+    const allowUpdateHolidays = canUpdateHoliday();
 
     const fetchHolidays = async () => {
         try {
@@ -163,6 +182,7 @@ const Calendar = () => {
                     onClose={() => setIsHolidayModalOpen(false)}
                     onSave={handleSaveHoliday}
                     selectedDate={selectedDate}
+                    allowAddHolidays={allowAddHolidays}
                 />
 
                 <CommonHolidayModal
@@ -178,9 +198,16 @@ const Calendar = () => {
                         <h3>Calendar</h3>
                         <p className="subtitle">View and manage your scheduled events and appointments.</p>
                     </div>
-                    <Button type="primary" onClick={() => setIsCommonHolidayModalOpen(true)}>
-                        Common Holiday
-                    </Button>
+                    {allowAddHolidays ?
+
+                        <Button type="primary" onClick={() => setIsCommonHolidayModalOpen(true)}>
+                            Common Holiday
+                        </Button> :
+                        <Button type="disabled" onClick={() => toast.warn("Required Holiday Add Permission")}>
+                            Common Holiday
+                        </Button>
+                    }
+
                 </div>
                 <Card className="shadow-md rounded-lg overflow-hidden" loading={loading}>
                     <AntCalendar

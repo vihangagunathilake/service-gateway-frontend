@@ -51,3 +51,29 @@ export const getUserPermissions = async () => {
         throw error;
     }
 };
+
+/**
+ * Fetch user permission access
+ * @returns {Promise<Array>} List of permission access objects
+ */
+export const getUserPermissionAccess = async () => {
+    try {
+        const baseUrl = getConfig().baseUrl;
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
+
+        const response = await axios.get(`${baseUrl}/user/load-permission-access`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        return response.data.data;
+    } catch (error) {
+        console.error('Failed to fetch user permission access:', error);
+        throw error;
+    }
+};

@@ -13,9 +13,12 @@ import ManagePointServicesModal from '../components/ManagePointServicesModal';
 import EditClusterServiceModal from '../components/EditClusterServiceModal';
 import ClusterWarningModal from '../components/ClusterWarningModal';
 import ConfirmDialog from '../components/ConfirmDialog';
+import { useUser } from '../context/UserContext';
 import '../App.css';
+import Tooltip from '@mui/material/Tooltip';
 
 const ServiceCenter = () => {
+    const { hasPermissionAccess } = useUser();
     const { id } = useParams();
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState('employees');
@@ -60,6 +63,86 @@ const ServiceCenter = () => {
     const [warningModalData, setWarningModalData] = useState({ clusterName: '', services: [] });
 
     const [serviceCenterCount, setServiceCenterCount] = useState(0);
+
+    const canAddCenter = () =>
+        hasPermissionAccess(
+            'Center Management',
+            'adding'
+        );
+
+    const assignEmployeeToCenter = () =>
+        hasPermissionAccess(
+            'Employee Management',
+            'assigning'
+        );
+
+    const removeEmployeeFromCenter = () =>
+        hasPermissionAccess(
+            'Employee Management',
+            'deleting'
+        );
+
+    const addServicePoints = () =>
+        hasPermissionAccess(
+            'Points Management',
+            'adding'
+        );
+
+    const updateServicePoints = () =>
+        hasPermissionAccess(
+            'Points Management',
+            'updating'
+        );
+
+    const removeServicePoints = () =>
+        hasPermissionAccess(
+            'Points Management',
+            'deleting'
+        );
+
+    const getServicePointDetails = () =>
+        hasPermissionAccess(
+            'Points Management',
+            'getting'
+        );
+
+    const assignWorkflow = () =>
+        hasPermissionAccess(
+            'Cluster Management',
+            'assigning'
+        );
+
+    const getWorkflow = () =>
+        hasPermissionAccess(
+            'Assigned Clusters Management',
+            'getting'
+        );
+
+    const editWorkflow = () =>
+        hasPermissionAccess(
+            'Assigned Clusters Management',
+            'updating'
+        );
+
+    const allowAddCenter = canAddCenter();
+
+    const allowAssignEmployeeToCenter = assignEmployeeToCenter();
+
+    const allowRemoveEmployeeFromCenter = removeEmployeeFromCenter();
+
+    const allowAddServicePoints = addServicePoints();
+
+    const allowUpdateServicePoints = updateServicePoints();
+
+    const allowRemoveServicePoints = removeServicePoints();
+
+    const allowGetServicePointDetails = getServicePointDetails();
+
+    const allowAssignWorkflow = assignWorkflow();
+
+    const allowGetWorkflow = getWorkflow();
+
+    const allowEditWorkflow = editWorkflow();
 
     const fetchEmployees = async () => {
         setEmployeesLoading(true);
@@ -407,14 +490,26 @@ const ServiceCenter = () => {
         <div className="tab-section-content">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <h4 style={{ margin: 0 }}>Assigned Employees</h4>
-                <button
-                    className="primary-btn"
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                    onClick={() => setIsAssignModalOpen(true)}
-                >
-                    <UserPlus size={18} />
-                    Assign Employee
-                </button>
+                {allowAssignEmployeeToCenter ? (
+                    <button
+                        className="primary-btn"
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                        onClick={() => setIsAssignModalOpen(true)}
+                    >
+                        <UserPlus size={18} />
+                        Assign Employee
+                    </button>
+                ) : (
+                    <button
+                        className="primary-btn-disabled"
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                        onClick={() => { toast.warn("Required Employee Assign Permission"); }}
+                    >
+                        <UserPlus size={18} />
+                        Assign Employee
+                    </button>
+                )}
+
             </div>
 
             {employeesLoading ? (
@@ -445,16 +540,26 @@ const ServiceCenter = () => {
                                         <td className="mobile-hidden">
                                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                                                 {emp.contact}
-                                                <button
-                                                    className="icon-action-btn text-danger"
-                                                    title="Remove from Center"
-                                                    onClick={() => {
-                                                        setEmployeeToRemove(emp);
-                                                        setIsRemoveDialogOpen(true);
-                                                    }}
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
+                                                {allowRemoveEmployeeFromCenter ? (
+                                                    <button
+                                                        className="icon-action-btn text-danger"
+                                                        title="Remove from Center"
+                                                        onClick={() => {
+                                                            setEmployeeToRemove(emp);
+                                                            setIsRemoveDialogOpen(true);
+                                                        }}
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                ) : (
+                                                    <button
+                                                        className="icon-action-btn-disabled text-danger"
+                                                        title="Remove from Center"
+                                                        onClick={() => { toast.warn("Required Employee Deleting Permission"); }}
+                                                    >
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                )}
                                             </div>
                                         </td>
                                     </tr>
@@ -477,17 +582,29 @@ const ServiceCenter = () => {
         <div className="tab-section-content">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <h4 style={{ margin: 0 }}>Active Service Points</h4>
-                <button
-                    className="primary-btn"
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                    onClick={() => {
-                        setSelectedPoint(null);
-                        setIsPointModalOpen(true);
-                    }}
-                >
-                    <Layout size={18} />
-                    Add Service Point
-                </button>
+                {allowAddServicePoints ? (
+                    <button
+                        className="primary-btn"
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                        onClick={() => {
+                            setSelectedPoint(null);
+                            setIsPointModalOpen(true);
+                        }}
+                    >
+                        <Layout size={18} />
+                        Add Service Point
+                    </button>
+                ) : (
+                    <button
+                        className="primary-btn-disabled"
+                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                        onClick={() => { toast.warn("Required Points Add Permission"); }}
+                    >
+                        <Layout size={18} />
+                        Add Service Point
+                    </button>
+
+                )}
             </div>
 
             {pointsLoading ? (
@@ -532,36 +649,70 @@ const ServiceCenter = () => {
                                         </span>
                                     </div>
                                     <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', justifyContent: 'flex-end' }}>
-                                        <button
-                                            className="icon-action-btn text-primary"
-                                            style={{ color: 'var(--primary-color)' }}
-                                            onClick={() => {
-                                                setSelectedPointForServices(point);
-                                                setIsManageServicesModalOpen(true);
-                                            }}
-                                        >
-                                            <Briefcase size={16} />
-                                        </button>
-                                        <button
-                                            className="icon-action-btn"
-                                            onClick={() => {
-                                                setSelectedPoint(point);
-                                                setIsPointModalOpen(true);
-                                            }}
-                                            title="Edit Details"
-                                        >
-                                            <Edit2 size={16} />
-                                        </button>
-                                        <button
-                                            className="icon-action-btn text-danger"
-                                            onClick={() => {
-                                                setPointToDelete(point);
-                                                setIsDeletePointDialogOpen(true);
-                                            }}
-                                            title="Delete"
-                                        >
-                                            <Trash2 size={16} />
-                                        </button>
+                                        {allowGetServicePointDetails ? (
+                                            <button
+                                                className="icon-action-btn text-primary"
+                                                style={{ color: 'var(--primary-color)' }}
+                                                onClick={() => {
+                                                    setSelectedPointForServices(point);
+                                                    setIsManageServicesModalOpen(true);
+                                                }}
+                                            >
+                                                <Briefcase size={16} />
+                                            </button>
+                                        ) : (
+                                            <button
+                                                className="icon-action-btn-disabled text-primary"
+                                                style={{ color: 'var(--primary-color)' }}
+                                                onClick={() => { toast.warn("Required Points Get Permission"); }}
+                                            >
+                                                <Briefcase size={16} />
+                                            </button>
+                                        )}
+
+                                        {allowUpdateServicePoints ? (
+                                            <button
+                                                className="icon-action-btn"
+                                                onClick={() => {
+                                                    setSelectedPoint(point);
+                                                    setIsPointModalOpen(true);
+                                                }}
+                                                title="Edit Details"
+                                            >
+                                                <Edit2 size={16} />
+                                            </button>
+                                        ) : (
+                                            <button
+                                                className="icon-action-btn-disabled"
+                                                onClick={() => { toast.warn("Required Points Update Permission"); }}
+                                                title="Edit Details"
+                                            >
+                                                <Edit2 size={16} />
+                                            </button>
+                                        )}
+
+                                        {allowRemoveServicePoints ? (
+                                            <button
+                                                className="icon-action-btn text-danger"
+                                                onClick={() => {
+                                                    setPointToDelete(point);
+                                                    setIsDeletePointDialogOpen(true);
+                                                }}
+                                                title="Delete"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        ) : (
+
+                                            <button
+                                                className="icon-action-btn-disabled text-danger"
+                                                onClick={() => { toast.warn("Required Points Delete Permission"); }}
+                                                title="Delete"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        )}
+
                                     </div>
                                 </div>
                             </div>
@@ -587,13 +738,28 @@ const ServiceCenter = () => {
         <div className="tab-section-content">
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                 <h4 style={{ margin: 0 }}>Active Service Workflows</h4>
-                <button
-                    className="primary-btn"
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                    onClick={() => setIsAssignClusterModalOpen(true)}
-                >
-                    Add Workflow
-                </button>
+                {
+                    allowAssignWorkflow ? (
+                        <button
+                            className="primary-btn"
+                            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                            onClick={() => setIsAssignClusterModalOpen(true)}
+                        >
+                            Add Workflow
+                        </button>
+                    ) : (
+
+                        <button
+                            className="primary-btn-disabled"
+                            style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                            onClick={() => { toast.warn("Required Cluster Assign Permission"); }}
+                        >
+                            Add Workflow
+                        </button>
+
+                    )
+                }
+
             </div>
 
             {clustersLoading ? (
@@ -623,17 +789,33 @@ const ServiceCenter = () => {
                                         boxShadow: selectedCluster === cluster.id ? '0 8px 16px rgba(37, 99, 235, 0.15)' : 'none'
                                     }}
                                 >
-                                    <button
-                                        className="icon-action-btn text-danger"
-                                        style={{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 10 }}
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleRemoveClusterClick(cluster);
-                                        }}
-                                        title="Remove from center"
-                                    >
-                                        <Trash2 size={16} />
-                                    </button>
+                                    {
+                                        allowAssignWorkflow ? (
+                                            <button
+                                                className="icon-action-btn text-danger"
+                                                style={{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 10 }}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleRemoveClusterClick(cluster);
+                                                }}
+                                                title="Remove from center"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        ) : (
+
+                                            <button
+                                                className="icon-action-btn-disabled text-danger"
+                                                style={{ position: 'absolute', top: '1rem', right: '1rem', zIndex: 10 }}
+                                                onClick={() => { toast.warn("Required Cluster Assign Permission"); }}
+                                                title="Remove from center"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+
+                                        )
+                                    }
+
 
                                     {clusterWarnings[cluster.id] && (
                                         <button
@@ -714,110 +896,152 @@ const ServiceCenter = () => {
                                     <Loader2 className="animate-spin text-primary" size={32} />
                                 </div>
                             ) : clusterServices.length > 0 ? (
+                                <>
+                                    {allowGetWorkflow ? (
+                                        <div className="table-responsive">
+                                            <table className="data-table">
+                                                <thead>
+                                                    <tr>
+                                                        <th className="mobile-hidden">Order</th>
+                                                        <th>Service Name</th>
+                                                        <th className="mobile-hidden">Service Time</th>
+                                                        <th className="mobile-hidden">Total Price</th>
+                                                        <th className="mobile-hidden">Down Payment</th>
+                                                        <th className="mobile-hidden">Status</th>
+                                                        <th style={{ textAlign: 'center' }}>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {clusterServices.map((service, index) => (
+                                                        <tr key={index} style={{
+                                                            opacity: service.disabled ? 0.6 : 1,
+                                                            background: service.disabled ? 'var(--hover-bg)' : 'transparent'
+                                                        }}>
+                                                            <td className="mobile-hidden">
+                                                                <span style={{
+                                                                    display: 'inline-flex',
+                                                                    alignItems: 'center',
+                                                                    justifyContent: 'center',
+                                                                    width: '32px',
+                                                                    height: '32px',
+                                                                    borderRadius: '8px',
+                                                                    background: 'rgba(37, 99, 235, 0.1)',
+                                                                    color: 'var(--primary-color)',
+                                                                    fontWeight: '600',
+                                                                    fontSize: '0.9rem'
+                                                                }}>
+                                                                    {service.orderNumber}
+                                                                </span>
+                                                            </td>
+                                                            <td className="font-medium">{service.service}</td>
+                                                            <td className="mobile-hidden">
+                                                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                                                                    <Clock size={14} style={{ color: 'var(--text-secondary)' }} />
+                                                                    <span>{service.serviceTime}</span>
+                                                                </div>
+                                                            </td>
+                                                            <td className="mobile-hidden">
+                                                                <span style={{
+                                                                    fontWeight: '600',
+                                                                    color: 'var(--primary-color)'
+                                                                }}>
+                                                                    Rs. {service.total.toLocaleString()}
+                                                                </span>
+                                                            </td>
+                                                            <td className="mobile-hidden">
+                                                                <span style={{ color: service.downPay > 0 ? '#10b981' : 'var(--text-secondary)' }}>
+                                                                    Rs. {service.downPay.toLocaleString()}
+                                                                </span>
+                                                            </td>
+                                                            <td className="mobile-hidden">
+                                                                <span style={{
+                                                                    fontSize: '0.75rem',
+                                                                    fontWeight: '600',
+                                                                    padding: '0.35rem 0.75rem',
+                                                                    borderRadius: '20px',
+                                                                    background: service.disabled ? '#ef444415' : '#10b98115',
+                                                                    color: service.disabled ? '#ef4444' : '#10b981',
+                                                                    textTransform: 'uppercase',
+                                                                    letterSpacing: '0.05em'
+                                                                }}>
+                                                                    {service.disabled ? 'Disabled' : 'Active'}
+                                                                </span>
+                                                            </td>
+                                                            {allowEditWorkflow ?
+                                                                <td>
+                                                                    <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+                                                                        <button
+                                                                            className="icon-action-btn text-primary"
+                                                                            onClick={() => handleEditClusterService(service)}
+                                                                            title="Edit Service"
+                                                                            style={{
+                                                                                transition: 'all 0.2s ease'
+                                                                            }}
+                                                                        >
+                                                                            <Edit2 size={16} />
+                                                                        </button>
+                                                                        <button
+                                                                            className="icon-action-btn"
+                                                                            onClick={() => handleToggleServiceStatus(service)}
+                                                                            title={service.disabled ? 'Enable Service' : 'Disable Service'}
+                                                                            style={{
+                                                                                color: service.disabled ? '#10b981' : '#ef4444',
+                                                                                transition: 'all 0.2s ease'
+                                                                            }}
+                                                                        >
+                                                                            {service.disabled ? (
+                                                                                <CheckCircle size={16} />
+                                                                            ) : (
+                                                                                <Ban size={16} />
+                                                                            )}
+                                                                        </button>
+                                                                    </div>
+                                                                </td> :
 
-                                <div className="table-responsive">
-                                    <table className="data-table">
-                                        <thead>
-                                            <tr>
-                                                <th className="mobile-hidden">Order</th>
-                                                <th>Service Name</th>
-                                                <th className="mobile-hidden">Service Time</th>
-                                                <th className="mobile-hidden">Total Price</th>
-                                                <th className="mobile-hidden">Down Payment</th>
-                                                <th className="mobile-hidden">Status</th>
-                                                <th style={{ textAlign: 'center' }}>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {clusterServices.map((service, index) => (
-                                                <tr key={index} style={{
-                                                    opacity: service.disabled ? 0.6 : 1,
-                                                    background: service.disabled ? 'var(--hover-bg)' : 'transparent'
-                                                }}>
-                                                    <td className="mobile-hidden">
-                                                        <span style={{
-                                                            display: 'inline-flex',
-                                                            alignItems: 'center',
-                                                            justifyContent: 'center',
-                                                            width: '32px',
-                                                            height: '32px',
-                                                            borderRadius: '8px',
-                                                            background: 'rgba(37, 99, 235, 0.1)',
-                                                            color: 'var(--primary-color)',
-                                                            fontWeight: '600',
-                                                            fontSize: '0.9rem'
-                                                        }}>
-                                                            {service.orderNumber}
-                                                        </span>
-                                                    </td>
-                                                    <td className="font-medium">{service.service}</td>
-                                                    <td className="mobile-hidden">
-                                                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                                            <Clock size={14} style={{ color: 'var(--text-secondary)' }} />
-                                                            <span>{service.serviceTime}</span>
-                                                        </div>
-                                                    </td>
-                                                    <td className="mobile-hidden">
-                                                        <span style={{
-                                                            fontWeight: '600',
-                                                            color: 'var(--primary-color)'
-                                                        }}>
-                                                            Rs. {service.total.toLocaleString()}
-                                                        </span>
-                                                    </td>
-                                                    <td className="mobile-hidden">
-                                                        <span style={{ color: service.downPay > 0 ? '#10b981' : 'var(--text-secondary)' }}>
-                                                            Rs. {service.downPay.toLocaleString()}
-                                                        </span>
-                                                    </td>
-                                                    <td className="mobile-hidden">
-                                                        <span style={{
-                                                            fontSize: '0.75rem',
-                                                            fontWeight: '600',
-                                                            padding: '0.35rem 0.75rem',
-                                                            borderRadius: '20px',
-                                                            background: service.disabled ? '#ef444415' : '#10b98115',
-                                                            color: service.disabled ? '#ef4444' : '#10b981',
-                                                            textTransform: 'uppercase',
-                                                            letterSpacing: '0.05em'
-                                                        }}>
-                                                            {service.disabled ? 'Disabled' : 'Active'}
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
-                                                            <button
-                                                                className="icon-action-btn text-primary"
-                                                                onClick={() => handleEditClusterService(service)}
-                                                                title="Edit Service"
-                                                                style={{
-                                                                    transition: 'all 0.2s ease'
-                                                                }}
-                                                            >
-                                                                <Edit2 size={16} />
-                                                            </button>
-                                                            <button
-                                                                className="icon-action-btn"
-                                                                onClick={() => handleToggleServiceStatus(service)}
-                                                                title={service.disabled ? 'Enable Service' : 'Disable Service'}
-                                                                style={{
-                                                                    color: service.disabled ? '#10b981' : '#ef4444',
-                                                                    transition: 'all 0.2s ease'
-                                                                }}
-                                                            >
-                                                                {service.disabled ? (
-                                                                    <CheckCircle size={16} />
-                                                                ) : (
-                                                                    <Ban size={16} />
-                                                                )}
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                </div>
+                                                                <td>
+                                                                    <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
+
+                                                                        <button
+                                                                            className="icon-action-btn-disabled text-primary"
+                                                                            onClick={() => { toast.warn("Required Assigned Cluster Update Permission"); }}
+                                                                            title="Edit Service"
+                                                                            style={{
+                                                                                transition: 'all 0.2s ease'
+                                                                            }}
+                                                                        >
+                                                                            <Edit2 size={16} />
+                                                                        </button>
+                                                                        <button
+                                                                            className="icon-action-btn-disabled"
+                                                                            onClick={() => { toast.warn("Required Assigned Cluster Update Permission"); }}
+                                                                            title={service.disabled ? 'Enable Service' : 'Disable Service'}
+                                                                            style={{
+                                                                                color: service.disabled ? '#10b981' : '#ef4444',
+                                                                                transition: 'all 0.2s ease'
+                                                                            }}
+                                                                        >
+                                                                            {service.disabled ? (
+                                                                                <CheckCircle size={16} />
+                                                                            ) : (
+                                                                                <Ban size={16} />
+                                                                            )}
+                                                                        </button>
+                                                                    </div>
+                                                                </td>
+                                                            }
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    ) : (
+                                        <div style={{ textAlign: 'center', padding: '3rem', background: 'var(--hover-bg)', borderRadius: '12px', border: '1px dashed var(--border-color)' }}>
+
+                                            <p style={{ margin: 0, color: 'var(--text-secondary)' }}>Required Assigned Clusters Management Permission to get the content.</p>
+                                        </div>
+                                    )}
+                                </>
+
 
                             ) : (
                                 <div style={{ textAlign: 'center', padding: '3rem', background: 'var(--hover-bg)', borderRadius: '12px', border: '1px dashed var(--border-color)' }}>
@@ -911,14 +1135,31 @@ const ServiceCenter = () => {
                     </div>
                 </div>
                 {serviceCenterCount <= 1 && (
-                    <button
-                        className="primary-btn"
-                        onClick={() => setIsAddCenterModalOpen(true)}
-                        style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-                    >
-                        <Plus size={18} />
-                        Add Center
-                    </button>
+                    <>
+                        {
+                            allowAddCenter ? (
+                                <button
+                                    className="primary-btn"
+                                    onClick={() => setIsAddCenterModalOpen(true)}
+                                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                >
+                                    <Plus size={18} />
+                                    Add Center
+                                </button>
+                            ) : (
+                                <button
+                                    className="primary-btn-disabled"
+                                    onClick={() => { toast.warn("Required Center Add Permission"); }}
+                                    style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+                                >
+                                    <Plus size={18} />
+                                    Add Center
+                                </button>
+
+                            )
+                        }
+                    </>
+
                 )}
             </div>
 

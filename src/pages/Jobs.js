@@ -9,6 +9,8 @@ import { toast } from 'react-toastify';
 import Tooltip from '@mui/material/Tooltip';
 import { Skeleton, Box } from '@mui/material';
 
+import { useUser } from '../context/UserContext';
+
 const Jobs = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -23,6 +25,23 @@ const Jobs = () => {
     const [isLoadingJobs, setIsLoadingJobs] = useState(false);
     const [isLoadingCenters, setIsLoadingCenters] = useState(true);
     const [highlightedJobId, setHighlightedJobId] = useState(null);
+
+    const { hasPermissionAccess } = useUser();
+
+    const canAddJobs = () =>
+        hasPermissionAccess(
+            'Jobs Management',
+            'adding'
+        );
+
+    const canPaymentVerify = () =>
+        hasPermissionAccess(
+            'Payments Verifier',
+            'adding'
+        );
+
+    const allowAddJobs = canAddJobs();
+    const allowPaymentVerify = canPaymentVerify();
 
     React.useEffect(() => {
         const fetchCenters = async () => {
@@ -180,10 +199,15 @@ const Jobs = () => {
                     <p className="subtitle">Track and manage all service requests</p>
                 </div>
                 <div className="header-actions">
-                    <button className="primary-btn" onClick={() => setIsCreateModalOpen(true)}>
+                    {allowAddJobs ? <button className="primary-btn" onClick={() => setIsCreateModalOpen(true)}>
                         <Plus size={18} />
                         <span>Create Job</span>
-                    </button>
+                    </button> :
+                        <button className="primary-btn-disabled" onClick={() => toast.warn("Required Jobs Add Permission")}>
+                            <Plus size={18} />
+                            <span>Create Job</span>
+                        </button>}
+
                 </div>
             </div>
 
@@ -197,49 +221,49 @@ const Jobs = () => {
                         </div>
                     </div>
                 ) : (
-                <div className="table-toolbar">
-                    <div className="toolbar-filters">
-                        <div className="search-bar-wrapper">
-                            <Search size={18} className="search-icon" />
-                            <input
-                                type="text"
-                                placeholder="Search by ID, customer, service..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="form-control search-input"
-                            />
-                        </div>
-                        <div className="filter-select-wrapper center-filter">
-                            <Building size={18} className="filter-icon" />
-                            <select
-                                value={selectedCenter}
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    setSelectedCenter(val);
-                                    navigate(location.pathname, { replace: true, state: { ...location.state, selectedCenter: val, selectedDate } });
-                                }}
-                                className="form-control filter-select"
-                            >
-                                {centers.map(center => (
-                                    <option key={center.id} value={center.id}>{center.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="filter-select-wrapper date-filter">
-                            <Calendar size={18} className="filter-icon" />
-                            <input
-                                type="date"
-                                value={selectedDate}
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    setSelectedDate(val);
-                                    navigate(location.pathname, { replace: true, state: { ...location.state, selectedCenter, selectedDate: val } });
-                                }}
-                                className="form-control filter-date"
-                            />
+                    <div className="table-toolbar">
+                        <div className="toolbar-filters">
+                            <div className="search-bar-wrapper">
+                                <Search size={18} className="search-icon" />
+                                <input
+                                    type="text"
+                                    placeholder="Search by ID, customer, service..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="form-control search-input"
+                                />
+                            </div>
+                            <div className="filter-select-wrapper center-filter">
+                                <Building size={18} className="filter-icon" />
+                                <select
+                                    value={selectedCenter}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setSelectedCenter(val);
+                                        navigate(location.pathname, { replace: true, state: { ...location.state, selectedCenter: val, selectedDate } });
+                                    }}
+                                    className="form-control filter-select"
+                                >
+                                    {centers.map(center => (
+                                        <option key={center.id} value={center.id}>{center.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div className="filter-select-wrapper date-filter">
+                                <Calendar size={18} className="filter-icon" />
+                                <input
+                                    type="date"
+                                    value={selectedDate}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setSelectedDate(val);
+                                        navigate(location.pathname, { replace: true, state: { ...location.state, selectedCenter, selectedDate: val } });
+                                    }}
+                                    className="form-control filter-date"
+                                />
+                            </div>
                         </div>
                     </div>
-                </div>
                 )}
 
                 <div className="kanban-board">
@@ -256,11 +280,11 @@ const Jobs = () => {
                                     </div>
                                     <div className="kanban-cards-container">
                                         {Array.from(new Array(3)).map((_, j) => (
-                                            <Skeleton 
-                                                key={j} 
-                                                variant="rounded" 
-                                                height={100} 
-                                                sx={{ mb: 2, borderRadius: '0.75rem' }} 
+                                            <Skeleton
+                                                key={j}
+                                                variant="rounded"
+                                                height={100}
+                                                sx={{ mb: 2, borderRadius: '0.75rem' }}
                                             />
                                         ))}
                                     </div>
@@ -423,6 +447,7 @@ const Jobs = () => {
                 isOpen={isCreateModalOpen}
                 onClose={() => setIsCreateModalOpen(false)}
                 onJobCreated={handleJobCreated}
+                allowPaymentVerify={allowPaymentVerify}
             />
         </div>
     );

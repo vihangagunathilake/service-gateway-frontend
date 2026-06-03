@@ -7,9 +7,13 @@ import { getClusters, deleteCluster } from '../services/serviceProviderService';
 import { toast } from 'react-toastify';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 
 const Clusters = () => {
     const navigate = useNavigate();
+
+    const { hasPermissionAccess } = useUser();
+
     const [searchQuery, setSearchQuery] = useState('');
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [selectedCluster, setSelectedCluster] = useState(null);
@@ -19,6 +23,30 @@ const Clusters = () => {
     const [clusterToDelete, setClusterToDelete] = useState(null);
     const [isDeleting, setIsDeleting] = useState(false);
     const isInitialMount = useRef(true);
+
+    const canAddWorkflow = () =>
+        hasPermissionAccess(
+            'Cluster Management',
+            'adding'
+        );
+
+    const canDeleteWorkflow = () =>
+        hasPermissionAccess(
+            'Cluster Management',
+            'deleting'
+        );
+
+    const canEditWorkflow = () =>
+        hasPermissionAccess(
+            'Cluster Management',
+            'updating'
+        );
+
+    const allowAddWorkflow = canAddWorkflow();
+
+    const allowDeleteWorkflow = canDeleteWorkflow();
+
+    const allowEditWorkflow = canEditWorkflow();
 
     const fetchClusters = async () => {
         try {
@@ -123,10 +151,18 @@ const Clusters = () => {
                     <p className="subtitle">Workflows are useful for your customers and make it easy to choose multiple services at once.</p>
                 </div>
                 <div className="header-actions">
-                    <button className="primary-btn" onClick={handleCreate}>
-                        <Plus size={18} />
-                        <span>Create Workflow</span>
-                    </button>
+                    {allowAddWorkflow ? (
+                        <button className="primary-btn" onClick={handleCreate}>
+                            <Plus size={18} />
+                            <span>Create Workflow</span>
+                        </button>
+                    ) :
+                        <button className="primary-btn-disabled"
+                            onClick={() => { toast.warn("Required Workflow Add Permission"); }}>
+                            <Plus size={18} />
+                            <span>Create Workflow</span>
+                        </button>
+                    }
                 </div>
             </div>
 
@@ -206,7 +242,7 @@ const Clusters = () => {
                             ) : filteredClusters.length > 0 ? (
                                 filteredClusters.map(cluster => (
                                     <tr key={cluster.id}>
-                                         <td className="font-medium">
+                                        <td className="font-medium">
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                                                     <div className="mobile-hidden" style={{ padding: '8px', background: 'var(--info-bg)', color: 'var(--info-color)', borderRadius: '8px' }}>
@@ -269,12 +305,25 @@ const Clusters = () => {
                                         </td>
                                         <td style={{ textAlign: 'right' }}>
                                             <div className="action-buttons justify-end justify-mobile-center">
-                                                <button className="icon-action-btn" title="Edit" onClick={() => handleEdit(cluster)}>
-                                                    <Pencil size={16} />
-                                                </button>
-                                                <button className="icon-action-btn text-danger mobile-hidden" title="Delete" onClick={() => handleDeleteClick(cluster)}>
-                                                    <Trash2 size={16} />
-                                                </button>
+                                                {allowEditWorkflow ?
+                                                    <button className="icon-action-btn" title="Edit" onClick={() => handleEdit(cluster)}>
+                                                        <Pencil size={16} />
+                                                    </button> :
+                                                    <button className="icon-action-btn-disabled" title="Edit"
+                                                        onClick={() => toast.warn("Required Workflow Update Permission")}>
+                                                        <Pencil size={16} />
+                                                    </button>}
+
+                                                {allowDeleteWorkflow ?
+                                                    <button className="icon-action-btn text-danger mobile-hidden" title="Delete" onClick={() => handleDeleteClick(cluster)}>
+                                                        <Trash2 size={16} />
+                                                    </button> :
+                                                    <button className="icon-action-btn-disabled text-danger mobile-hidden" title="Delete" onClick={() => toast.warn("Required Workflow Delete Permission")}>
+                                                        <Trash2 size={16} />
+                                                    </button>
+                                                }
+
+
                                             </div>
                                         </td>
                                     </tr>

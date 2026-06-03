@@ -6,6 +6,8 @@ import { getConfig } from '../config';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { Skeleton } from '@mui/material';
+import { useUser } from '../context/UserContext';
+import { getUserPermissionAccess } from '../services/userService';
 
 const UserProfile = () => {
     const navigate = useNavigate();
@@ -35,13 +37,35 @@ const UserProfile = () => {
     const [originalNotifications, setOriginalNotifications] = useState([]);
     const [isLoadingNotifications, setIsLoadingNotifications] = useState(true);
     const [isSavingNotifications, setIsSavingNotifications] = useState(false);
+    const [permissions, setPermissions] = useState([]);
+    const [isLoadingPermissions, setIsLoadingPermissions] = useState(true);
 
     const fetchInitiated = useRef(false);
+
+
+    const { hasPermissionAccess } = useUser();
+
+    const canAssignRole = () =>
+        hasPermissionAccess(
+            'Role Management',
+            'assigning'
+        );
+
+    const canAssignEmployee = () =>
+        hasPermissionAccess(
+            'Employee Management',
+            'assigning'
+        );
+
+    const allowAssignRole = canAssignRole();
+
+    const allowAssignEmployee = canAssignEmployee();
 
     useEffect(() => {
         if (!fetchInitiated.current) {
             fetchUserProfile();
             fetchNotifications();
+            fetchPermissions();
             fetchInitiated.current = true;
         }
     }, []);
@@ -72,7 +96,7 @@ const UserProfile = () => {
                     serviceCenter: data.serviceCenter,
                     serviceCenterId: null,
                     joinDate: data.joinedDate,
-                    avatarColor: "linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%)",
+                    avatarColor: "linear-gradient(135deg, #F97316 0%, #F59E0B 100%)",
                     imageUrl: data.imageUrl
                 });
             }
@@ -121,6 +145,61 @@ const UserProfile = () => {
             }
         } finally {
             setIsLoadingNotifications(false);
+        }
+    };
+
+    const fetchPermissions = async () => {
+        setIsLoadingPermissions(true);
+        try {
+            const data = await getUserPermissionAccess();
+            setPermissions(data || []);
+        } catch (error) {
+            console.error("Failed to load permission access:", error);
+            if (error?.response?.data?.code === 1) {
+                toast.info("Session expired. Please login again.");
+                navigate('/login');
+            } else if (error?.response?.data?.data) {
+                toast.error(error?.response?.data?.data);
+            } else {
+                toast.error('Failed to load permissions');
+            }
+        } finally {
+            setIsLoadingPermissions(false);
+        }
+    };
+
+    const getTrueAccesses = (perm) => {
+        const accesses = [];
+        if (perm.adding) accesses.push('adding');
+        if (perm.updating) accesses.push('updating');
+        if (perm.deleting) accesses.push('deleting');
+        if (perm.getting) accesses.push('getting');
+        if (perm.getAll) accesses.push('getAll');
+        if (perm.assigning) accesses.push('assigning');
+        if (perm.allowAll) accesses.push('allowAll');
+        return accesses;
+    };
+
+    const accessLabels = {
+        adding: 'ADD',
+        updating: 'UPDATE',
+        deleting: 'DELETE',
+        getting: 'GET',
+        getAll: 'GET ALL',
+        assigning: 'ASSIGN',
+        allowAll: 'ALLOW ALL'
+    };
+
+    const getAccessBadgeClass = (access) => {
+        switch (access) {
+            case 'adding': return 'badge-pill badge-success';
+            case 'updating': return 'badge-pill badge-primary';
+            case 'deleting': return 'badge-pill';
+            case 'getting': return 'badge-pill badge-info';
+            case 'getAll': return 'badge-pill badge-info';
+            case 'assigning': return 'badge-pill badge-warning';
+            case 'allowAll': return 'badge-pill badge-success';
+            default: return 'badge-pill';
         }
     };
 
@@ -608,141 +687,228 @@ const UserProfile = () => {
                 </div>
             </div>
 
+            {/* Permissions Section */}
+            <div className="profile-secondary-layout">
+                <div className="profile-secondary-spacer" />
+                <div className="content-card" style={{ marginTop: '1.5rem' }}>
+                    <h4 style={{
+                        borderBottom: '1px solid var(--border-color)',
+                        paddingBottom: '1rem',
+                        marginBottom: '1.5rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.5rem'
+                    }}>
+                        <Shield size={20} className="text-primary" />
+                        Permissions
+                    </h4>
+
+                    {isLoadingPermissions ? (
+                        <div style={{
+                            borderRadius: '0.5rem',
+                            padding: '1rem',
+                        }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                {Array.from(new Array(4)).map((_, i) => (
+                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
+                                        <Skeleton variant="text" width="30%" sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
+                                        <Skeleton variant="text" width="50%" sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    ) : permissions.length === 0 ? (
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '2.5rem 1rem',
+                            gap: '0.75rem',
+                            color: 'var(--text-secondary)'
+                        }}>
+                            <Shield size={36} style={{ opacity: 0.4 }} />
+                            <span style={{ fontSize: '0.9rem' }}>No permissions found</span>
+                        </div>
+                    ) : (
+                        <div className="table-responsive">
+                            <table className="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Permission</th>
+                                        <th>Access</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {permissions.map((perm, idx) => {
+                                        const trueAccesses = getTrueAccesses(perm);
+                                        return (
+                                            <tr key={perm.permission || idx}>
+                                                <td style={{ fontWeight: '500', color: 'var(--text-primary)' }}>
+                                                    {perm.permission}
+                                                </td>
+                                                <td>
+                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                                                        {trueAccesses.length > 0 ? (
+                                                            trueAccesses.map((access) => (
+                                                                <span
+                                                                    key={access}
+                                                                    className={getAccessBadgeClass(access)}
+                                                                    style={access === 'deleting' ? { backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' } : {}}
+                                                                >
+                                                                    {accessLabels[access]}
+                                                                </span>
+                                                            ))
+                                                        ) : (
+                                                            <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>-</span>
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                </div>
+            </div>
+
             {/* Notifications Section */}
             <div className="profile-secondary-layout">
                 <div className="profile-secondary-spacer" />
                 <div className="content-card" style={{ marginTop: '1.5rem' }}>
-                <h4 style={{
-                    borderBottom: '1px solid var(--border-color)',
-                    paddingBottom: '1rem',
-                    marginBottom: '1.5rem',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '0.5rem'
-                }}>
-                    <Bell size={20} className="text-primary" />
-                    Notifications
-                </h4>
-
-                {isLoadingNotifications ? (
-                    <div style={{
-                        border: '1px solid var(--border-color)',
-                        borderRadius: '0.5rem',
-                        padding: '1rem',
-                        background: 'var(--hover-bg)'
-                    }}>
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                            {Array.from(new Array(4)).map((_, i) => (
-                                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem' }}>
-                                    <Skeleton variant="rounded" width={16} height={16} sx={{ borderRadius: '3px', bgcolor: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
-                                    <Skeleton variant="text" width={i % 2 === 0 ? 120 : 160} sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                ) : notifications.length === 0 ? (
-                    <div style={{
+                    <h4 style={{
+                        borderBottom: '1px solid var(--border-color)',
+                        paddingBottom: '1rem',
+                        marginBottom: '1.5rem',
                         display: 'flex',
-                        flexDirection: 'column',
                         alignItems: 'center',
-                        justifyContent: 'center',
-                        padding: '2.5rem 1rem',
-                        gap: '0.75rem',
-                        color: 'var(--text-secondary)'
+                        gap: '0.5rem'
                     }}>
-                        <BellOff size={36} style={{ opacity: 0.4 }} />
-                        <span style={{ fontSize: '0.9rem' }}>No notifications assigned</span>
-                    </div>
-                ) : (
-                    <>
-                    <div style={{
-                        border: '1px solid var(--border-color)',
-                        borderRadius: '0.5rem',
-                        padding: '1rem',
-                        background: 'var(--hover-bg)'
-                    }}>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                        {notifications.map((notif, index) => (
-                            <div
-                                key={getNotificationKey(notif, index)}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '0.6rem',
-                                    color: 'var(--text-primary)',
-                                    padding: '0.4rem',
-                                    borderRadius: '0.25rem'
-                                }}
-                            >
-                                <input
-                                    type="checkbox"
-                                    checked={!Boolean(notif.disabled)}
-                                    onChange={() => handleNotificationDisabledChange(index)}
-                                    style={{
-                                        width: '16px',
-                                        height: '16px',
-                                        cursor: 'pointer',
-                                        accentColor: 'var(--info-color)',
-                                        flexShrink: 0
-                                    }}
-                                />
-                                <span style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', minWidth: 0 }}>
-                                    <span style={{ fontSize: '0.9rem', wordBreak: 'break-word', lineHeight: '1.4' }}>
-                                        {notif.title}
-                                    </span>
-                                    {notif.content ? (
-                                        <span style={{
-                                            fontSize: '0.78rem',
-                                            color: 'var(--text-secondary)',
-                                            lineHeight: '1.4',
-                                            wordBreak: 'break-word'
-                                        }}>
-                                            {notif.content}
-                                        </span>
-                                    ) : null}
-                                </span>
+                        <Bell size={20} className="text-primary" />
+                        Notifications
+                    </h4>
+
+                    {isLoadingNotifications ? (
+                        <div style={{
+                            // border: '1px solid var(--border-color)',
+                            borderRadius: '0.5rem',
+                            padding: '1rem',
+                            // background: 'var(--hover-bg)'
+                        }}>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                {Array.from(new Array(4)).map((_, i) => (
+                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem' }}>
+                                        <Skeleton variant="rounded" width={16} height={16} sx={{ borderRadius: '3px', bgcolor: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
+                                        <Skeleton variant="text" width={i % 2 === 0 ? 120 : 160} sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
-                    </div>
-                    <div style={{
-                        display: 'flex',
-                        justifyContent: 'flex-end',
-                        gap: '0.75rem',
-                        marginTop: '1.25rem',
-                        paddingTop: '1.25rem',
-                        borderTop: '1px solid var(--border-color)',
-                        flexWrap: 'wrap'
-                    }}>
-                        <button
-                            type="button"
-                            className="secondary-btn"
-                            onClick={handleResetNotifications}
-                            disabled={!hasNotificationChanges || isSavingNotifications}
-                            style={{
-                                opacity: (!hasNotificationChanges || isSavingNotifications) ? 0.55 : 1,
-                                cursor: (!hasNotificationChanges || isSavingNotifications) ? 'not-allowed' : 'pointer'
-                            }}
-                        >
-                            <RotateCcw size={16} />
-                            <span>Reset</span>
-                        </button>
-                        <button
-                            type="button"
-                            className="primary-btn"
-                            onClick={handleSaveNotifications}
-                            disabled={!hasNotificationChanges || isSavingNotifications}
-                            style={{
-                                opacity: (!hasNotificationChanges || isSavingNotifications) ? 0.55 : 1,
-                                cursor: (!hasNotificationChanges || isSavingNotifications) ? 'not-allowed' : 'pointer'
-                            }}
-                        >
-                            {isSavingNotifications ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
-                            <span>{isSavingNotifications ? 'Saving...' : 'Save'}</span>
-                        </button>
-                    </div>
-                    </>
-                )}
+                        </div>
+                    ) : notifications.length === 0 ? (
+                        <div style={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            padding: '2.5rem 1rem',
+                            gap: '0.75rem',
+                            color: 'var(--text-secondary)'
+                        }}>
+                            <BellOff size={36} style={{ opacity: 0.4 }} />
+                            <span style={{ fontSize: '0.9rem' }}>No notifications assigned</span>
+                        </div>
+                    ) : (
+                        <>
+                            <div style={{
+                                // border: '1px solid var(--border-color)',
+                                borderRadius: '0.5rem',
+                                padding: '1rem',
+                                // background: 'var(--hover-bg)'
+                            }}>
+                                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+                                    {notifications.map((notif, index) => (
+                                        <div
+                                            key={getNotificationKey(notif, index)}
+                                            style={{
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '0.6rem',
+                                                color: 'var(--text-primary)',
+                                                padding: '0.4rem',
+                                                borderRadius: '0.25rem'
+                                            }}
+                                        >
+                                            <input
+                                                type="checkbox"
+                                                checked={!Boolean(notif.disabled)}
+                                                onChange={() => handleNotificationDisabledChange(index)}
+                                                style={{
+                                                    width: '16px',
+                                                    height: '16px',
+                                                    cursor: 'pointer',
+                                                    accentColor: 'var(--info-color)',
+                                                    flexShrink: 0
+                                                }}
+                                            />
+                                            <span style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', minWidth: 0 }}>
+                                                <span style={{ fontSize: '0.9rem', wordBreak: 'break-word', lineHeight: '1.4' }}>
+                                                    {notif.title}
+                                                </span>
+                                                {notif.content ? (
+                                                    <span style={{
+                                                        fontSize: '0.78rem',
+                                                        color: 'var(--text-secondary)',
+                                                        lineHeight: '1.4',
+                                                        wordBreak: 'break-word'
+                                                    }}>
+                                                        {notif.content}
+                                                    </span>
+                                                ) : null}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div style={{
+                                display: 'flex',
+                                justifyContent: 'flex-end',
+                                gap: '0.75rem',
+                                marginTop: '1.25rem',
+                                paddingTop: '1.25rem',
+                                borderTop: '1px solid var(--border-color)',
+                                flexWrap: 'wrap'
+                            }}>
+                                <button
+                                    type="button"
+                                    className="secondary-btn"
+                                    onClick={handleResetNotifications}
+                                    disabled={!hasNotificationChanges || isSavingNotifications}
+                                    style={{
+                                        opacity: (!hasNotificationChanges || isSavingNotifications) ? 0.55 : 1,
+                                        cursor: (!hasNotificationChanges || isSavingNotifications) ? 'not-allowed' : 'pointer'
+                                    }}
+                                >
+                                    <RotateCcw size={16} />
+                                    <span>Reset</span>
+                                </button>
+                                <button
+                                    type="button"
+                                    className="primary-btn"
+                                    onClick={handleSaveNotifications}
+                                    disabled={!hasNotificationChanges || isSavingNotifications}
+                                    style={{
+                                        opacity: (!hasNotificationChanges || isSavingNotifications) ? 0.55 : 1,
+                                        cursor: (!hasNotificationChanges || isSavingNotifications) ? 'not-allowed' : 'pointer'
+                                    }}
+                                >
+                                    {isSavingNotifications ? <Loader2 className="animate-spin" size={16} /> : <Save size={16} />}
+                                    <span>{isSavingNotifications ? 'Saving...' : 'Save'}</span>
+                                </button>
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
 
@@ -823,42 +989,85 @@ const UserProfile = () => {
                                     </div>
 
                                     {/* User Type - Mocked Read Only or Select */}
-                                    <div className="input-group">
-                                        <Briefcase className="input-icon" size={18} />
-                                        <select
-                                            name="userType"
-                                            value={editFormData.userType}
-                                            onChange={handleInputChange}
-                                            className="modal-select"
-                                            style={{ width: '100%', paddingLeft: '2.5rem', height: '100%', border: 'none', color: 'inherit', background: 'transparent', outline: 'none', appearance: 'none', WebkitAppearance: 'none' }}
-                                        >
-                                            <option value="USER">User</option>
-                                            {/* <option value="ADMIN">Admin</option> */}
-                                            <option value="EMPLOYEE">Employee</option>
-                                        </select>
-                                    </div>
-
-                                    {/* Role */}
-                                    <div className="input-group">
-                                        <Shield className="input-icon" size={18} />
-                                        {isLoadingRoles ? (
-                                            <div style={{ padding: '0.8rem 0.8rem 0.8rem 2.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Loading...</div>
-                                        ) : (
+                                    {allowAssignEmployee ? (
+                                        <div className="input-group">
+                                            <Briefcase className="input-icon" size={18} />
                                             <select
-                                                name="roleId"
-                                                value={editFormData.roleId}
+                                                name="userType"
+                                                value={editFormData.userType}
                                                 onChange={handleInputChange}
                                                 className="modal-select"
-                                                required
                                                 style={{ width: '100%', paddingLeft: '2.5rem', height: '100%', border: 'none', color: 'inherit', background: 'transparent', outline: 'none', appearance: 'none', WebkitAppearance: 'none' }}
                                             >
-                                                <option value="">Select Role</option>
-                                                {roles.map(role => (
-                                                    <option key={role.id} value={role.id}>{role.name}</option>
-                                                ))}
+                                                <option value="USER">User</option>
+                                                {/* <option value="ADMIN">Admin</option> */}
+                                                <option value="EMPLOYEE">Employee</option>
                                             </select>
+                                        </div>
+                                    ) : (
+                                        <div className="input-group">
+                                            <Briefcase className="input-icon" size={18} />
+                                            <select
+                                                name="userType"
+                                                value={editFormData.userType}
+                                                onChange={handleInputChange}
+                                                disabled
+                                                className="modal-select"
+                                                style={{ width: '100%', paddingLeft: '2.5rem', height: '100%', border: 'none', color: 'inherit', background: 'transparent', outline: 'none', appearance: 'none', WebkitAppearance: 'none' }}
+                                            >
+                                                <option value="USER">User</option>
+                                                {/* <option value="ADMIN">Admin</option> */}
+                                                <option value="EMPLOYEE">Employee</option>
+                                            </select>
+                                        </div>
+                                    )}
+
+
+                                    {/* Role */}
+                                    {allowAssignRole ?
+                                        (<div className="input-group">
+                                            <Shield className="input-icon" size={18} />
+                                            {isLoadingRoles ? (
+                                                <div style={{ padding: '0.8rem 0.8rem 0.8rem 2.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Loading...</div>
+                                            ) : (
+                                                <select
+                                                    name="roleId"
+                                                    value={editFormData.roleId}
+                                                    onChange={handleInputChange}
+                                                    className="modal-select"
+                                                    required
+                                                    style={{ width: '100%', paddingLeft: '2.5rem', height: '100%', border: 'none', color: 'inherit', background: 'transparent', outline: 'none', appearance: 'none', WebkitAppearance: 'none' }}
+                                                >
+                                                    <option value="">Select Role</option>
+                                                    {roles.map(role => (
+                                                        <option key={role.id} value={role.id}>{role.name}</option>
+                                                    ))}
+                                                </select>
+                                            )}
+                                        </div>) : (
+                                            <div className="input-group">
+                                                <Shield className="input-icon" size={18} />
+                                                {isLoadingRoles ? (
+                                                    <div style={{ padding: '0.8rem 0.8rem 0.8rem 2.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Loading...</div>
+                                                ) : (
+                                                    <select
+                                                        name="roleId"
+                                                        value={editFormData.roleId}
+                                                        onChange={handleInputChange}
+                                                        className="modal-select"
+                                                        disabled
+                                                        required
+                                                        style={{ width: '100%', paddingLeft: '2.5rem', height: '100%', border: 'none', color: 'inherit', background: 'transparent', outline: 'none', appearance: 'none', WebkitAppearance: 'none' }}
+                                                    >
+                                                        <option value="">Select Role</option>
+                                                        {roles.map(role => (
+                                                            <option key={role.id} value={role.id}>{role.name}</option>
+                                                        ))}
+                                                    </select>
+                                                )}
+                                            </div>
                                         )}
-                                    </div>
+
 
                                     {/* Service Center - Mocked Read Only */}
                                     <div className="input-group">

@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import dayjs from 'dayjs';
 import { useTheme } from '../context/ThemeContext';
 
-const CreateJobModal = ({ isOpen, onClose, onJobCreated }) => {
+const CreateJobModal = ({ isOpen, onClose, onJobCreated, allowPaymentVerify }) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         customerName: '',
@@ -764,9 +764,12 @@ const CreateJobModal = ({ isOpen, onClose, onJobCreated }) => {
                                 <button type="button" className="secondary-btn" onClick={handleBack} disabled={loading || isCleaningUp}>
                                     {isCleaningUp ? 'Cleaning up...' : 'Back'}
                                 </button>
-                                <button type="button" className="primary-btn" onClick={handleFinalCreate} disabled={loading || isCleaningUp}>
+                                {allowPaymentVerify ? <button type="button" className="primary-btn" onClick={handleFinalCreate} disabled={loading || isCleaningUp}>
                                     {loading ? 'Creating...' : 'Create Job'}
-                                </button>
+                                </button> : <button type="button" className="primary-btn-disabled" onClick={() => toast.warn("Required Jobs Add Permission")}>
+                                    {loading ? 'Creating...' : 'Create Job'}
+                                </button>}
+
                             </>
                         )}
                     </div>
