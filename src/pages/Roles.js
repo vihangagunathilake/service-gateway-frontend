@@ -458,7 +458,7 @@ const Roles = () => {
                                                     width: '16px',
                                                     height: '16px',
                                                     cursor: canAssignPermission() ? 'pointer' : 'not-allowed',
-                                                    accentColor: 'var(--info-color)',
+                                                    accentColor: 'var(--checkbox-accent-color)',
                                                     flexShrink: 0,
                                                     opacity: canAssignPermission() ? 1 : 0.6
                                                 }}
@@ -606,13 +606,20 @@ const Roles = () => {
                                                     {showNotifications() ? (
                                                         <>
                                                             <div className="permissions-list mobile-hidden">
-                                                                {role.notifications && role.notifications.length > 0 ? role.notifications.map((notif, index) => (
-                                                                    <span key={index} className="badge-pill badge-info" style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8' }}>{notif}</span>
-                                                                )) : <span className="text-muted">-</span>}
+                                                                {role.notifications && role.notifications.length > 0 ? role.notifications.map((notif, index) => {
+                                                                    const badgeStyle = {
+                                                                        display: 'inline-flex',
+                                                                        alignItems: 'center',
+                                                                        gap: '0.35rem'
+                                                                    };
+                                                                    return (
+                                                                        <span key={index} className="badge-pill" style={badgeStyle}>{notif}</span>
+                                                                    );
+                                                                }) : <span className="text-muted">-</span>}
                                                             </div>
                                                             <div className="desktop-hidden" style={{ alignItems: 'center' }}>
                                                                 {role.notifications && role.notifications.length > 0 ? (
-                                                                    <span className="badge-pill" style={{ background: 'rgba(56, 189, 248, 0.1)', color: '#38bdf8' }}>
+                                                                    <span className="badge-pill" style={{ background: 'rgba(59, 130, 246, 0.1)', color: '#60a5fa' }}>
                                                                         {role.notifications.length}
                                                                     </span>
                                                                 ) : (

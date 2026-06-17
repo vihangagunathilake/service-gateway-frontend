@@ -354,7 +354,7 @@ const ServiceCenters = () => {
                                         className="icon-btn"
                                         onClick={() => paginate(currentPage - 1)}
                                         disabled={currentPage === 1}
-                                        style={{ padding: '0.5rem', borderRadius: '4px', background: currentPage === 1 ? '#f5f5f5' : 'white', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', border: 'none' }}
+                                        style={{ padding: '0.5rem', borderRadius: '4px', background: currentPage === 1 ? 'var(--hover-bg)' : 'var(--modal-bg)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
                                     >
                                         <ChevronLeft size={16} />
                                     </button>
@@ -367,10 +367,10 @@ const ServiceCenters = () => {
                                                 style={{
                                                     padding: '0.25rem 0.75rem',
                                                     borderRadius: '4px',
-                                                    background: currentPage === i + 1 ? '#007bff' : 'white',
-                                                    color: currentPage === i + 1 ? 'white' : 'inherit',
+                                                    background: currentPage === i + 1 ? 'var(--primary-color)' : 'var(--modal-bg)',
+                                                    color: currentPage === i + 1 ? 'white' : 'var(--text-primary)',
                                                     cursor: 'pointer',
-                                                    border: 'none'
+                                                    border: '1px solid var(--border-color)'
                                                 }}
                                             >
                                                 {i + 1}
@@ -378,7 +378,7 @@ const ServiceCenters = () => {
                                         ))
                                     ) : (
                                         <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
-                                            <span style={{ padding: '0.25rem' }}>Page {currentPage} of {totalPages}</span>
+                                            <span style={{ padding: '0.25rem', color: 'var(--text-primary)' }}>Page {currentPage} of {totalPages}</span>
                                         </div>
                                     )}
 
@@ -386,7 +386,7 @@ const ServiceCenters = () => {
                                         className="icon-btn"
                                         onClick={() => paginate(currentPage + 1)}
                                         disabled={currentPage === totalPages}
-                                        style={{ padding: '0.5rem', borderRadius: '4px', background: currentPage === totalPages ? '#f5f5f5' : 'white', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', border: 'none' }}
+                                        style={{ padding: '0.5rem', borderRadius: '4px', background: currentPage === totalPages ? 'var(--hover-bg)' : 'var(--modal-bg)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer' }}
                                     >
                                         <ChevronRight size={16} />
                                     </button>

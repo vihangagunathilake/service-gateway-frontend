@@ -358,7 +358,7 @@ const RoleModal = ({ isOpen, onClose, role, onSave }) => {
                                                 checked={isSelected || permissionName === 'Permit This'}
                                                 onChange={() => togglePermission(permissionName)}
                                                 disabled={permissionName === 'Permit This'}
-                                                style={{ cursor: permissionName === 'Permit This' ? 'not-allowed' : 'pointer', width: '16px', height: '16px', accentColor: '#3b82f6', flexShrink: 0 }}
+                                                style={{ cursor: permissionName === 'Permit This' ? 'not-allowed' : 'pointer', width: '16px', height: '16px', accentColor: 'var(--checkbox-accent-color)', flexShrink: 0 }}
                                             />
                                             <span style={{ fontSize: '0.9rem', wordBreak: 'break-word', lineHeight: '1.4' }}>{permissionName}</span>
                                             </label>
@@ -423,7 +423,7 @@ const RoleModal = ({ isOpen, onClose, role, onSave }) => {
                                                     type="checkbox"
                                                     checked={isSelected}
                                                     onChange={() => toggleNotification(type)}
-                                                    style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: '#3b82f6', flexShrink: 0 }}
+                                                    style={{ cursor: 'pointer', width: '16px', height: '16px', accentColor: 'var(--checkbox-accent-color)', flexShrink: 0 }}
                                                 />
                                                 <span style={{ fontSize: '0.9rem', wordBreak: 'break-word', lineHeight: '1.4' }}>{name}</span>
                                             </label>

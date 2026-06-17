@@ -5,7 +5,7 @@ import axios from 'axios';
 import { getConfig } from '../config';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { Skeleton } from '@mui/material';
+import { Skeleton, Tooltip } from '@mui/material';
 import { useUser } from '../context/UserContext';
 import { getUserPermissionAccess } from '../services/userService';
 
@@ -39,6 +39,7 @@ const UserProfile = () => {
     const [isSavingNotifications, setIsSavingNotifications] = useState(false);
     const [permissions, setPermissions] = useState([]);
     const [isLoadingPermissions, setIsLoadingPermissions] = useState(true);
+    const [mobileTooltipId, setMobileTooltipId] = useState(null);
 
     const fetchInitiated = useRef(false);
 
@@ -96,7 +97,7 @@ const UserProfile = () => {
                     serviceCenter: data.serviceCenter,
                     serviceCenterId: null,
                     joinDate: data.joinedDate,
-                    avatarColor: "linear-gradient(135deg, #F97316 0%, #F59E0B 100%)",
+                    avatarColor: "var(--primary-color)",
                     imageUrl: data.imageUrl
                 });
             }
@@ -168,6 +169,7 @@ const UserProfile = () => {
         }
     };
 
+
     const getTrueAccesses = (perm) => {
         const accesses = [];
         if (perm.adding) accesses.push('adding');
@@ -191,16 +193,7 @@ const UserProfile = () => {
     };
 
     const getAccessBadgeClass = (access) => {
-        switch (access) {
-            case 'adding': return 'badge-pill badge-success';
-            case 'updating': return 'badge-pill badge-primary';
-            case 'deleting': return 'badge-pill';
-            case 'getting': return 'badge-pill badge-info';
-            case 'getAll': return 'badge-pill badge-info';
-            case 'assigning': return 'badge-pill badge-warning';
-            case 'allowAll': return 'badge-pill badge-success';
-            default: return 'badge-pill';
-        }
+        return `badge-pill`;
     };
 
     const getNotificationKey = (notification, index) => (
@@ -435,11 +428,7 @@ const UserProfile = () => {
     };
 
     const getUserTypeBadgeClass = (type) => {
-        const typeStr = type.toLowerCase();
-        if (typeStr === 'admin') return 'badge-pill badge-primary';
-        if (typeStr === 'user') return 'badge-pill badge-info';
-        if (typeStr === 'employee') return 'badge-pill badge-success';
-        return 'badge-pill';
+        return 'badge-pill badge-neutral';
     };
 
     return (
@@ -562,7 +551,7 @@ const UserProfile = () => {
                             alignItems: 'center',
                             gap: '0.5rem'
                         }}>
-                            <User size={20} className="text-primary" />
+                            <User size={20} className="text-secondary" />
                             Personal Information
                         </h4>
                     )}
@@ -599,7 +588,7 @@ const UserProfile = () => {
                                     <div className="detail-group">
                                         <label style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '0.5rem', display: 'block' }}>Email Address</label>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1rem' }}>
-                                            <div style={{ padding: '8px', borderRadius: '8px', background: 'var(--info-bg)', color: 'var(--info-color)' }}>
+                                            <div style={{ padding: '8px', borderRadius: '8px', background: 'var(--hover-bg)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>
                                                 <Mail size={18} />
                                             </div>
                                             {user.email}
@@ -611,7 +600,7 @@ const UserProfile = () => {
                                     <div className="detail-group">
                                         <label style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '0.5rem', display: 'block' }}>Phone Number</label>
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1rem' }}>
-                                            <div style={{ padding: '8px', borderRadius: '8px', background: 'var(--info-bg)', color: 'var(--info-color)' }}>
+                                            <div style={{ padding: '8px', borderRadius: '8px', background: 'var(--hover-bg)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>
                                                 <Phone size={18} />
                                             </div>
                                             {user.contact}
@@ -624,7 +613,7 @@ const UserProfile = () => {
                                         <div className="detail-group">
                                             <label style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '0.5rem', display: 'block' }}>National ID (NIC)</label>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1rem' }}>
-                                                <div style={{ padding: '8px', borderRadius: '8px', background: 'var(--info-bg)', color: 'var(--info-color)' }}>
+                                                <div style={{ padding: '8px', borderRadius: '8px', background: 'var(--hover-bg)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>
                                                     <FileText size={18} />
                                                 </div>
                                                 {user.nic}
@@ -659,7 +648,7 @@ const UserProfile = () => {
                                     <label style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '0.5rem', display: 'block' }}>Service Information</label>
                                     {user.role ? (
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1rem', marginBottom: '0.5rem' }}>
-                                            <div style={{ padding: '8px', borderRadius: '8px', background: 'var(--success-bg)', color: 'var(--success-color)' }}>
+                                            <div style={{ padding: '8px', borderRadius: '8px', background: 'var(--hover-bg)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>
                                                 <Shield size={18} />
                                             </div>
                                             <div>
@@ -670,7 +659,7 @@ const UserProfile = () => {
                                     ) : null}
                                     {user.serviceCenter ? (
                                         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '1rem', marginBottom: '0.5rem' }}>
-                                            <div style={{ padding: '8px', borderRadius: '8px', background: 'var(--danger-bg)', color: 'var(--danger-color)' }}>
+                                            <div style={{ padding: '8px', borderRadius: '8px', background: 'var(--hover-bg)', color: 'var(--text-secondary)', border: '1px solid var(--border-color)' }}>
                                                 <MapPin size={18} />
                                             </div>
                                             <div>
@@ -699,23 +688,15 @@ const UserProfile = () => {
                         alignItems: 'center',
                         gap: '0.5rem'
                     }}>
-                        <Shield size={20} className="text-primary" />
+                        <Shield size={20} className="text-secondary" />
                         Permissions
                     </h4>
 
                     {isLoadingPermissions ? (
-                        <div style={{
-                            borderRadius: '0.5rem',
-                            padding: '1rem',
-                        }}>
-                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
-                                {Array.from(new Array(4)).map((_, i) => (
-                                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '2rem' }}>
-                                        <Skeleton variant="text" width="30%" sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
-                                        <Skeleton variant="text" width="50%" sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
-                                    </div>
-                                ))}
-                            </div>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', padding: '0.5rem 0' }}>
+                            {Array.from(new Array(5)).map((_, i) => (
+                                <Skeleton key={i} variant="rounded" width={100 + (i % 3) * 20} height={36} sx={{ borderRadius: '0.5rem', bgcolor: 'rgba(255,255,255,0.1)' }} />
+                            ))}
                         </div>
                     ) : permissions.length === 0 ? (
                         <div style={{
@@ -731,44 +712,88 @@ const UserProfile = () => {
                             <span style={{ fontSize: '0.9rem' }}>No permissions found</span>
                         </div>
                     ) : (
-                        <div className="table-responsive">
-                            <table className="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>Permission</th>
-                                        <th>Access</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {permissions.map((perm, idx) => {
-                                        const trueAccesses = getTrueAccesses(perm);
-                                        return (
-                                            <tr key={perm.permission || idx}>
-                                                <td style={{ fontWeight: '500', color: 'var(--text-primary)' }}>
-                                                    {perm.permission}
-                                                </td>
-                                                <td>
-                                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                                                        {trueAccesses.length > 0 ? (
-                                                            trueAccesses.map((access) => (
-                                                                <span
-                                                                    key={access}
-                                                                    className={getAccessBadgeClass(access)}
-                                                                    style={access === 'deleting' ? { backgroundColor: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' } : {}}
-                                                                >
-                                                                    {accessLabels[access]}
-                                                                </span>
-                                                            ))
-                                                        ) : (
-                                                            <span style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>-</span>
-                                                        )}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        );
-                                    })}
-                                </tbody>
-                            </table>
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.75rem', padding: '0.5rem 0' }}>
+                            {permissions.map((perm, idx) => {
+                                if (perm.permission === 'Permit This') return null;
+                                const trueAccesses = getTrueAccesses(perm);
+                                
+                                const tooltipContent = (
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', padding: '0.25rem' }}>
+                                        {trueAccesses.length > 0 ? (
+                                            trueAccesses.map((access) => (
+                                                <span
+                                                    key={access}
+                                                    className={getAccessBadgeClass(access)}
+                                                    style={{ fontSize: '0.7rem', padding: '0.15rem 0.4rem', border: '1px solid currentColor' }}
+                                                >
+                                                    {accessLabels[access]}
+                                                </span>
+                                            ))
+                                        ) : (
+                                            <span>No Access Granted</span>
+                                        )}
+                                    </div>
+                                );
+
+                                const isMobile = window.innerWidth <= 768;
+                                const isOpen = isMobile ? mobileTooltipId === perm.permission : undefined;
+
+                                return (
+                                    <Tooltip
+                                        key={perm.permission || idx}
+                                        title={tooltipContent}
+                                        placement="top"
+                                        arrow
+                                        open={isOpen}
+                                        onClose={() => {
+                                            if (isMobile) setMobileTooltipId(null);
+                                        }}
+                                        disableHoverListener={isMobile}
+                                        disableFocusListener={isMobile}
+                                        disableTouchListener={isMobile}
+                                        slotProps={{
+                                            tooltip: {
+                                                sx: {
+                                                    backgroundColor: 'var(--modal-bg)',
+                                                    color: 'var(--text-primary)',
+                                                    border: '1px solid var(--border-color)',
+                                                    boxShadow: 'var(--card-shadow)',
+                                                    padding: '8px',
+                                                    borderRadius: '8px',
+                                                    '& .MuiTooltip-arrow': {
+                                                        color: 'var(--modal-bg)'
+                                                    }
+                                                }
+                                            }
+                                        }}
+                                    >
+                                        <button
+                                            type="button"
+                                            className="badge-pill"
+                                            onClick={() => {
+                                                if (isMobile) {
+                                                    setMobileTooltipId(prev => prev === perm.permission ? null : perm.permission);
+                                                }
+                                            }}
+                                            style={{ 
+                                                border: '1px solid var(--border-color)', 
+                                                cursor: 'pointer',
+                                                borderRadius: '0.5rem',
+                                                padding: '0.5rem 1rem',
+                                                display: 'inline-flex',
+                                                alignItems: 'center',
+                                                gap: '0.4rem',
+                                                fontSize: '0.85rem',
+                                                background: 'var(--hover-bg)',
+                                                color: 'var(--text-primary)'
+                                            }}
+                                        >
+                                            <Shield size={14} style={{ color: 'var(--text-secondary)' }} />
+                                            {perm.permission}
+                                        </button>
+                                    </Tooltip>
+                                );
+                            })}
                         </div>
                     )}
                 </div>
@@ -786,7 +811,7 @@ const UserProfile = () => {
                         alignItems: 'center',
                         gap: '0.5rem'
                     }}>
-                        <Bell size={20} className="text-primary" />
+                        <Bell size={20} className="text-secondary" />
                         Notifications
                     </h4>
 
@@ -848,7 +873,7 @@ const UserProfile = () => {
                                                     width: '16px',
                                                     height: '16px',
                                                     cursor: 'pointer',
-                                                    accentColor: 'var(--info-color)',
+                                                    accentColor: 'var(--checkbox-accent-color)',
                                                     flexShrink: 0
                                                 }}
                                             />

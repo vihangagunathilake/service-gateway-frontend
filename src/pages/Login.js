@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import { User, Lock, ArrowRight, Loader2 } from 'lucide-react';
 import RegisterModal from '../components/RegisterModal';
 import { getConfig } from '../config';
+import { useTheme } from '../context/ThemeContext';
 import '../App.css'; // We'll add specific styles in App.css
 
 const Login = () => {
@@ -13,6 +14,12 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
     const navigate = useNavigate();
+    const { theme } = useTheme();
+
+    const isDarkMode = theme === 'dark';
+    const logoSrc = isDarkMode
+        ? process.env.PUBLIC_URL + "/logo512_d.png"
+        : process.env.PUBLIC_URL + "/logo512_l.png";
 
     const handleLogin = async (e) => {
         e.preventDefault();
@@ -51,7 +58,7 @@ const Login = () => {
         <div className="login-container">
             <div className="login-card">
                 <div className="login-header">
-                    <img src={process.env.PUBLIC_URL + "/logo512.png"} alt="Service Gateway Logo" className="login-logo" />
+                    <img src={logoSrc} alt="Service Gateway Logo" className="login-logo" />
                     {/* <h2>Welcome Back</h2> */}
                     <p>Please sign in to continue</p>
                 </div>

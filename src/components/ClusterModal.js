@@ -135,7 +135,7 @@ const ClusterModal = ({ isOpen, onClose, onClusterSaved, cluster = null }) => {
                 <div className="modal-header">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                         <div style={{
-                            background: 'rgba(37, 99, 235, 0.1)',
+                            background: 'rgba(31, 136, 61, 0.1)',
                             color: 'var(--primary-color)',
                             padding: '10px',
                             borderRadius: '12px'
@@ -257,10 +257,10 @@ const ClusterModal = ({ isOpen, onClose, onClusterSaved, cluster = null }) => {
                                                                 cursor: 'pointer',
                                                                 borderRadius: '6px',
                                                                 transition: 'background 0.2s',
-                                                                background: isChecked ? 'rgba(37, 99, 235, 0.05)' : 'transparent'
+                                                                background: isChecked ? 'rgba(31, 136, 61, 0.05)' : 'transparent'
                                                             }}
-                                                            onMouseEnter={(e) => e.currentTarget.style.background = isChecked ? 'rgba(37, 99, 235, 0.08)' : 'var(--hover-bg)'}
-                                                            onMouseLeave={(e) => e.currentTarget.style.background = isChecked ? 'rgba(37, 99, 235, 0.05)' : 'transparent'}
+                                                            onMouseEnter={(e) => e.currentTarget.style.background = isChecked ? 'rgba(31, 136, 61, 0.08)' : 'var(--hover-bg)'}
+                                                            onMouseLeave={(e) => e.currentTarget.style.background = isChecked ? 'rgba(31, 136, 61, 0.05)' : 'transparent'}
                                                         >
                                                             <div style={{ display: 'flex', flexDirection: 'column' }}>
                                                                 <span style={{ fontSize: '0.9rem', fontWeight: isChecked ? '600' : '400', color: isChecked ? 'var(--primary-color)' : 'var(--text-primary)' }}>{service.name}</span>

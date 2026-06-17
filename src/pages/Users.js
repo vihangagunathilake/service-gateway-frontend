@@ -177,12 +177,7 @@ const Users = () => {
     };
 
     const getUserTypeBadgeClass = (type) => {
-        switch (type?.toLowerCase()) {
-            case 'admin': return 'badge-pill badge-primary'; // Adjust classes as needed based on App.css or expected styles
-            case 'user': return 'badge-pill badge-info';
-            case 'customer': return 'badge-pill badge-success';
-            default: return 'badge-pill';
-        }
+        return 'badge-pill badge-neutral';
     };
 
     // Action Handlers
@@ -644,7 +639,7 @@ const Users = () => {
                                             )}
                                         </td>
                                         <td className="mobile-hidden">
-                                            <div className={`status-text ${user.providerApproved === "approved" ? 'text-success' : 'text-warning'}`} style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                                            <div className={`status-text ${user.providerApproved === "approved" ? 'text-secondary' : 'text-primary'}`} style={{ fontSize: '0.75rem', display: 'flex', alignItems: 'center', gap: '4px' }}>
                                                 {user.providerApproved === "approved" ? (
                                                     <><CheckCircle size={10} /> Approved</>
                                                 ) : (
@@ -735,11 +730,11 @@ const Users = () => {
                             Showing {(currentPage - 1) * usersPerPage + 1} to {Math.min(currentPage * usersPerPage, totalUsers)} of {totalUsers} entries
                         </div>
                         <div className="pagination-controls" style={{ display: 'flex', gap: '5px' }}>
-                            <button
+                             <button
                                 className="icon-btn"
                                 onClick={() => paginate(currentPage - 1)}
                                 disabled={currentPage === 1}
-                                style={{ padding: '0.5rem', borderRadius: '4px', background: currentPage === 1 ? '#f5f5f5' : 'white', cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
+                                style={{ padding: '0.5rem', borderRadius: '4px', background: currentPage === 1 ? 'var(--hover-bg)' : 'var(--modal-bg)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', cursor: currentPage === 1 ? 'not-allowed' : 'pointer' }}
                             >
                                 <ChevronLeft size={16} />
                             </button>
@@ -752,8 +747,9 @@ const Users = () => {
                                     style={{
                                         padding: '0.25rem 0.75rem',
                                         borderRadius: '4px',
-                                        background: '#007bff',
-                                        color: currentPage === i + 1 ? 'white' : 'inherit',
+                                        background: 'var(--primary-color)',
+                                        color: 'white',
+                                        border: '1px solid var(--border-color)',
                                         cursor: 'pointer'
                                     }}
                                 >
@@ -765,7 +761,7 @@ const Users = () => {
                                 className="icon-btn"
                                 onClick={() => paginate(currentPage + 1)}
                                 disabled={totPages < 1}
-                                style={{ padding: '0.5rem', borderRadius: '4px', background: currentPage === totalPages ? '#f5f5f5' : 'white', cursor: totPages < 1 ? 'not-allowed' : 'pointer' }}
+                                style={{ padding: '0.5rem', borderRadius: '4px', background: currentPage === totalPages ? 'var(--hover-bg)' : 'var(--modal-bg)', color: 'var(--text-primary)', border: '1px solid var(--border-color)', cursor: totPages < 1 ? 'not-allowed' : 'pointer' }}
                             >
                                 <ChevronRight size={16} />
                             </button>

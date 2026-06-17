@@ -245,7 +245,7 @@ const Clusters = () => {
                                         <td className="font-medium">
                                             <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                                                    <div className="mobile-hidden" style={{ padding: '8px', background: 'var(--info-bg)', color: 'var(--info-color)', borderRadius: '8px' }}>
+                                                    <div className="mobile-hidden" style={{ padding: '8px', background: 'var(--hover-bg)', color: 'var(--text-secondary)', borderRadius: '8px' }}>
                                                         <Layers size={16} />
                                                     </div>
                                                     {cluster.name}

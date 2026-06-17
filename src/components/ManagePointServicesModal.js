@@ -148,7 +148,7 @@ const ManagePointServicesModal = ({ isOpen, onClose, servicePoint, assignedServi
             <div className="modal-content" onClick={(e) => e.stopPropagation()} style={{ maxWidth: 'min(900px, 95vw)', width: '100%', maxHeight: '95vh' }}>
                 <div className="modal-header">
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <Briefcase size={20} className="text-primary" />
+                        <Briefcase size={20} style={{ color: 'var(--text-secondary)' }} />
                         <div>
                             <h3 style={{ margin: 0 }}>Manage Services</h3>
                             <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
@@ -166,7 +166,7 @@ const ManagePointServicesModal = ({ isOpen, onClose, servicePoint, assignedServi
                         {/* Assigned Services Section */}
                         <div>
                             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-                                <h4 style={{ margin: 0, fontSize: '1rem', color: 'var(--primary-color)' }}>
+                                <h4 style={{ margin: 0, fontSize: '1rem', color: 'var(--text-primary)' }}>
                                     Assigned Services ({localAssignedServices.length})
                                 </h4>
                             </div>
@@ -184,7 +184,7 @@ const ManagePointServicesModal = ({ isOpen, onClose, servicePoint, assignedServi
                                                 padding: '1rem',
                                                 borderRadius: '12px',
                                                 border: '1px solid var(--border-color)',
-                                                background: 'rgba(37, 99, 235, 0.05)',
+                                                background: 'var(--hover-bg)',
                                                 display: 'flex',
                                                 justifyContent: 'space-between',
                                                 alignItems: 'center',
@@ -202,7 +202,7 @@ const ManagePointServicesModal = ({ isOpen, onClose, servicePoint, assignedServi
                                                     {/* <span style={{
                                                         padding: '0.15rem 0.5rem',
                                                         borderRadius: '12px',
-                                                        background: 'rgba(37, 99, 235, 0.15)',
+                                                        background: 'rgba(31, 136, 61, 0.15)',
                                                         color: 'var(--primary-color)',
                                                         fontSize: '0.75rem',
                                                         fontWeight: '600'
@@ -213,7 +213,7 @@ const ManagePointServicesModal = ({ isOpen, onClose, servicePoint, assignedServi
                                                         <Clock size={12} />
                                                         {service.serviceTime}
                                                     </span>
-                                                    <span style={{ color: 'var(--primary-color)', fontWeight: '600' }}>
+                                                    <span style={{ color: 'var(--text-secondary)', fontWeight: '600' }}>
                                                         {service.totalPrice}
                                                     </span>
                                                 </div>
@@ -289,7 +289,7 @@ const ManagePointServicesModal = ({ isOpen, onClose, servicePoint, assignedServi
                         {/* Available Services Section */}
                         <div>
                             <div style={{ marginBottom: '1rem' }}>
-                                <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: 'var(--primary-color)' }}>
+                                <h4 style={{ margin: '0 0 0.75rem 0', fontSize: '1rem', color: 'var(--text-primary)' }}>
                                     Available Services ({availableServices.length})
                                 </h4>
                                 <div style={{ position: 'relative' }}>
@@ -388,7 +388,7 @@ const ManagePointServicesModal = ({ isOpen, onClose, servicePoint, assignedServi
                                                 <>
                                                     {allowAssignServicesToPoint ? (
                                                         <button
-                                                            className="secondary-btn"
+                                                            className="primary-btn"
                                                             onClick={() => handleAddService(service)}
                                                             disabled={processingId === service.id}
                                                             style={{
@@ -474,7 +474,7 @@ const ManagePointServicesModal = ({ isOpen, onClose, servicePoint, assignedServi
                 </div>
 
                 <div className="modal-footer" style={{ padding: '1.25rem 1.5rem', borderTop: '1px solid var(--border-color)', display: 'flex', justifyContent: 'flex-end' }}>
-                    <button type="button" className="primary-btn" onClick={onClose}>
+                    <button type="button" className="secondary-btn" onClick={onClose} style={{ borderColor: 'var(--border-color)', color: 'var(--text-primary)' }}>
                         Done
                     </button>
                 </div>

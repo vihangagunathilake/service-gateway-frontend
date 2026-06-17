@@ -1,56 +1,60 @@
 :root {
-  --primary-color: #2563eb;
-  --primary-hover: #1d4ed8;
-  --bg-color: #f1f5f9;
-  --sidebar-bg: #1e293b;
-  --sidebar-text: #e2e8f0;
+  --primary-color: #1f883d;
+  --primary-hover: #1a7f37;
+  --bg-color: #f6f8fa;
+  --sidebar-bg: #24292f;
+  --sidebar-text: #f3f4f6;
   --header-bg: #ffffff;
-  --text-primary: #334155;
-  --text-secondary: #64748b;
-  --danger-color: #ef4444;
-  --danger-bg: rgba(239, 68, 68, 0.1);
-  --success-color: #10b981;
-  --success-bg: rgba(16, 185, 129, 0.1);
-  --warning-color: #f59e0b;
-  --warning-bg: rgba(245, 158, 11, 0.1);
-  --info-color: #3b82f6;
-  --info-bg: rgba(59, 130, 246, 0.1);
-  --purple-color: #8b5cf6;
-  --purple-bg: rgba(139, 92, 246, 0.1);
-  --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --border-color: #e2e8f0;
+  --text-primary: #24292f;
+  --text-secondary: #57606a;
+  --danger-color: #cf222e;
+  --danger-bg: rgba(207, 34, 46, 0.1);
+  --success-color: #1a7f37;
+  --success-bg: rgba(26, 127, 55, 0.1);
+  --warning-color: #9a6700;
+  --warning-bg: rgba(154, 103, 0, 0.1);
+  --info-color: #0969da;
+  --info-bg: rgba(9, 105, 218, 0.1);
+  --purple-color: #8250df;
+  --purple-bg: rgba(130, 80, 223, 0.1);
+  --card-shadow: 0 1px 0 rgba(27, 31, 36, 0.04), 0 1px 3px rgba(27, 31, 36, 0.12);
+  --border-color: #d0d7de;
   --modal-bg: #ffffff;
-  --hover-bg: #f1f5f9;
-  --transition-speed: 0.3s;
-  --scrollbar-track: #f1f5f9;
-  --scrollbar-thumb: #cbd5e1;
-  --scrollbar-thumb-hover: #94a3b8;
+  --hover-bg: #f3f4f6;
+  --transition-speed: 0.2s;
+  --scrollbar-track: #f6f8fa;
+  --scrollbar-thumb: #d0d7de;
+  --scrollbar-thumb-hover: #57606a;
+  --checkbox-accent-color: #1f883d;
 }
 
 [data-theme='dark'] {
-  --bg-color: #0f172a;
-  --sidebar-bg: #1e293b;
+  --primary-color: #238636;
+  --primary-hover: #2ea043;
+  --bg-color: #0d1117;
+  --sidebar-bg: #161b22;
   /* Keep sidebar dark or make darker */
-  --header-bg: #1e293b;
-  --text-primary: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --danger-color: #f87171;
-  --danger-bg: rgba(248, 113, 113, 0.15);
-  --success-color: #34d399;
-  --success-bg: rgba(52, 211, 153, 0.15);
-  --warning-color: #fbbf24;
-  --warning-bg: rgba(251, 191, 36, 0.15);
-  --info-color: #60a5fa;
-  --info-bg: rgba(96, 165, 250, 0.15);
-  --purple-color: #a78bfa;
-  --purple-bg: rgba(167, 139, 250, 0.15);
-  --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.2);
-  --border-color: #334155;
-  --modal-bg: #1e293b;
-  --hover-bg: rgba(255, 255, 255, 0.05);
-  --scrollbar-track: #0f172a;
-  --scrollbar-thumb: #334155;
-  --scrollbar-thumb-hover: #475569;
+  --header-bg: #161b22;
+  --text-primary: #c9d1d9;
+  --text-secondary: #8b949e;
+  --danger-color: #f85149;
+  --danger-bg: rgba(248, 81, 73, 0.15);
+  --success-color: #3fb950;
+  --success-bg: rgba(63, 185, 80, 0.15);
+  --warning-color: #d29922;
+  --warning-bg: rgba(210, 153, 34, 0.15);
+  --info-color: #58a6ff;
+  --info-bg: rgba(88, 166, 255, 0.15);
+  --purple-color: #8cffd5;
+  --purple-bg: rgba(188, 140, 255, 0.15);
+  --card-shadow: 0 8px 24px #010409;
+  --border-color: #30363d;
+  --modal-bg: #161b22;
+  --hover-bg: rgba(177, 186, 196, 0.12);
+  --scrollbar-track: #0d1117;
+  --scrollbar-thumb: #30363d;
+  --scrollbar-thumb-hover: #8b949e;
+  --checkbox-accent-color: #58a6ff;
 }
 
 
@@ -176,10 +180,12 @@ body {
   resize: vertical;
 }
 
-.input-group input:focus {
+.input-group input:focus,
+.input-group textarea:focus,
+.input-group select:focus {
   outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  border-color: var(--primary-color) !important;
+  box-shadow: 0 0 0 3px rgba(31, 136, 61, 0.1) !important;
 }
 
 .form-control {
@@ -196,7 +202,7 @@ body {
 .form-control:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(31, 136, 61, 0.1);
 }
 
 [data-theme='dark'] .form-control {
@@ -208,7 +214,7 @@ body {
 .login-btn {
   width: 100%;
   padding: 0.875rem;
-  background: linear-gradient(135deg, var(--primary-color) 0%, #3b82f6 100%);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
   color: white;
   border: none;
   border-radius: 0.75rem;
@@ -220,13 +226,13 @@ body {
   gap: 0.75rem;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2), 0 2px 4px -2px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 4px 6px -1px rgba(31, 136, 61, 0.2), 0 2px 4px -2px rgba(31, 136, 61, 0.1);
 }
 
 .login-btn:hover:not(:disabled) {
   background: linear-gradient(135deg, var(--primary-hover) 0%, var(--primary-color) 100%);
   transform: translateY(-2px);
-  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3), 0 4px 6px -4px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 10px 15px -3px rgba(31, 136, 61, 0.3), 0 4px 6px -4px rgba(31, 136, 61, 0.2);
 }
 
 .login-btn:active:not(:disabled) {
@@ -372,7 +378,7 @@ body {
 .sidebar-header h3 {
   font-size: 1.1rem;
   font-weight: 700;
-  background: linear-gradient(to right, #60a5fa, #3b82f6);
+  background: linear-gradient(to right, var(--primary-color), var(--purple-color));
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -510,7 +516,7 @@ body {
   position: absolute;
   top: 0;
   right: 0;
-  background-color: var(--danger-color);
+  background-color: var(--primary-color);
   color: white;
   font-size: 0.75rem;
   width: 18px;
@@ -602,7 +608,11 @@ body {
 }
 
 .notification-dropdown-item.unread {
-  background: var(--info-bg);
+  background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+}
+
+.notification-dropdown-item.unread p {
+  color: white;
 }
 
 .notification-dropdown-item p {
@@ -623,7 +633,7 @@ body {
 .notification-dropdown-footer {
   padding: 0.75rem;
   text-align: center;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--text-secondary);
 }
 
 .notification-dropdown-footer span {
@@ -634,7 +644,7 @@ body {
 
 .profile-info {
   padding: 1rem;
-  background: linear-gradient(135deg, #F97316 0%, #F59E0B 100%);
+  background: var(--primary-color);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -1025,7 +1035,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid var(--primary-color);
+  /* border-bottom: 2px solid var(--primary-color); */
 }
 
 .kanban-column-title {
@@ -1040,10 +1050,11 @@ body {
 .kanban-column-count {
   font-size: 0.75rem;
   font-weight: 600;
-  background: var(--primary-color);
+  background: var(--hover-bg);
   padding: 0.125rem 0.625rem;
   border-radius: 12px;
-  color: white;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
 }
 
 .kanban-cards-container {
@@ -1093,8 +1104,8 @@ body {
 
 .kanban-card.selected {
   border-color: var(--primary-color);
-  background: rgba(37, 99, 235, 0.05);
-  box-shadow: 0 0 0 2px var(--primary-color), 0 4px 12px rgba(37, 99, 235, 0.15);
+  background: rgba(31, 136, 61, 0.05);
+  box-shadow: 0 0 0 2px var(--primary-color), 0 4px 12px rgba(31, 136, 61, 0.15);
   transform: scale(1.01);
 }
 
@@ -1132,7 +1143,7 @@ body {
 
 .kanban-card-free:hover {
   border-color: var(--primary-color);
-  background: rgba(37, 99, 235, 0.02);
+  background: rgba(31, 136, 61, 0.02);
   transform: translateY(-2px);
 }
 
@@ -1147,7 +1158,7 @@ body {
 
 .kanban-card-full:hover {
   border-color: var(--primary-color);
-  background: rgba(37, 99, 235, 0.02);
+  background: rgba(31, 136, 61, 0.02);
   transform: translateY(-2px);
 }
 
@@ -1178,14 +1189,14 @@ body {
 }
 
 .kanban-card-pending {
-  border-left: 4px solid #f59e0b;
-  background: rgba(245, 158, 11, 0.05);
+  border-left: 4px solid var(--primary-color);
+  background: rgba(31, 136, 61, 0.05);
 }
 
 
 .kanban-card-pending:hover {
-  border-color: #f59e0b;
-  border-left: 4px solid #f59e0b;
+  border-color: var(--primary-color);
+  border-left: 4px solid var(--primary-color);
 }
 
 .kanban-card-serving {
@@ -1199,13 +1210,13 @@ body {
 }
 
 .kanban-card-completed {
-  border-left: 4px solid #10b981;
-  background: rgba(16, 185, 129, 0.05);
+  border-left: 4px solid var(--border-color);
+  background: var(--hover-bg);
 }
 
 .kanban-card-completed:hover {
-  border-color: #10b981;
-  border-left: 4px solid #10b981;
+  border-color: var(--text-secondary);
+  border-left: 4px solid var(--text-secondary);
 }
 
 .kanban-card-id {
@@ -1244,8 +1255,8 @@ body {
 .kanban-card-id-pending {
   font-size: 0.65rem;
   font-weight: 700;
-  color: #f59e0b;
-  background: rgba(245, 158, 11, 0.1);
+  color: var(--primary-color);
+  background: rgba(31, 136, 61, 0.1);
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
   display: inline-flex;
@@ -1257,7 +1268,7 @@ body {
 }
 
 .kanban-card-id-pending:hover {
-  background: rgba(245, 158, 11, 0.2);
+  background: rgba(31, 136, 61, 0.15);
   transform: scale(1.05);
 }
 
@@ -1265,7 +1276,7 @@ body {
   font-size: 0.65rem;
   font-weight: 700;
   color: #3b82f6;
-  background: rgba(37, 99, 235, 0.1);
+  background: rgba(59, 130, 246, 0.1);
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
   display: inline-flex;
@@ -1277,15 +1288,15 @@ body {
 }
 
 .kanban-card-id-serving:hover {
-  background: rgba(37, 99, 235, 0.2);
+  background: rgba(59, 130, 246, 0.2);
   transform: scale(1.05);
 }
 
 .kanban-card-id-completed {
   font-size: 0.65rem;
   font-weight: 700;
-  color: hsl(160, 84%, 39%);
-  background: rgba(16, 185, 129, 0.1);
+  color: var(--text-secondary);
+  background: var(--hover-bg);
   padding: 0.15rem 0.4rem;
   border-radius: 4px;
   display: inline-flex;
@@ -1294,10 +1305,12 @@ body {
   margin-bottom: 2px;
   width: fit-content;
   transition: all 0.2s;
+  border: 1px solid var(--border-color);
 }
 
 .kanban-card-id-completed:hover {
-  background: rgba(16, 185, 129, 0.2);
+  background: var(--hover-bg);
+  filter: brightness(0.95);
   transform: scale(1.05);
 }
 
@@ -1351,7 +1364,7 @@ body {
 }
 
 .kanban-column-icon {
-  color: var(--primary-color);
+  color: var(--text-secondary);
 }
 
 .empty-kanban {
@@ -1397,7 +1410,7 @@ body {
   align-items: center;
   gap: 0.25rem;
   padding: 0.25rem 0.5rem;
-  background-color: rgba(37, 99, 235, 0.1);
+  background-color: rgba(31, 136, 61, 0.1);
   color: var(--primary-color);
   border-radius: 0.375rem;
   font-size: 0.75rem;
@@ -1483,7 +1496,7 @@ body {
 }
 
 .dropdown-option.selected {
-  background-color: rgba(37, 99, 235, 0.05);
+  background-color: rgba(31, 136, 61, 0.05);
   color: var(--primary-color);
   font-weight: 500;
 }
@@ -1635,8 +1648,28 @@ body {
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 500;
-  background-color: rgba(37, 99, 235, 0.1);
+  background-color: var(--info-bg);
   color: var(--primary-color);
+}
+
+.badge-neutral {
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #e2e8f0;
+}
+
+[data-theme='dark'] .badge-neutral {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-edit-modal .input-group input:focus,
+.profile-edit-modal .input-group textarea:focus,
+.profile-edit-modal .modal-select:focus {
+  outline: none;
+  border-color: var(--text-secondary) !important;
+  box-shadow: 0 0 0 3px var(--hover-bg) !important;
 }
 
 .role-cell {
@@ -1663,15 +1696,19 @@ body {
 }
 
 .text-warning {
-  color: #f59e0b;
+  color: var(--warning-color);
 }
 
 .text-success {
-  color: #10b981;
+  color: var(--success-color);
 }
 
 .text-primary {
   color: var(--primary-color);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
 }
 
 .font-medium {
@@ -1683,9 +1720,9 @@ body {
   align-items: center;
   justify-content: center;
   padding: 0.25rem 0.625rem;
-  background-color: rgba(37, 99, 235, 0.08);
-  color: var(--primary-color);
-  border: 1px solid rgba(37, 99, 235, 0.2);
+  background-color: var(--hover-bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   font-size: 0.8125rem;
   font-weight: 700;
@@ -1695,13 +1732,14 @@ body {
 }
 
 [data-theme='dark'] .order-number-badge {
-  background-color: rgba(59, 130, 246, 0.15);
-  border-color: rgba(59, 130, 246, 0.3);
-  color: #60a5fa;
+  background-color: var(--hover-bg);
+  border-color: var(--border-color);
+  color: var(--text-secondary);
 }
 
 .order-number-badge:hover {
-  background-color: rgba(37, 99, 235, 0.12);
+  background-color: var(--border-color);
+  color: var(--text-primary);
   transform: translateY(-1px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
@@ -1817,22 +1855,22 @@ body {
 
 /* Additional Utility Classes */
 .badge-success {
-  background-color: rgba(16, 185, 129, 0.1);
-  color: #10b981;
+  background-color: var(--success-bg);
+  color: var(--success-color);
 }
 
 .badge-warning {
-  background-color: rgba(255, 159, 64, 0.1);
-  color: #f59e0b;
+  background-color: var(--warning-bg);
+  color: var(--warning-color);
 }
 
 .badge-info {
-  background-color: rgba(59, 130, 246, 0.1);
-  color: #3b82f6;
+  background-color: var(--info-bg);
+  color: var(--info-color);
 }
 
 .badge-primary {
-  background-color: rgba(37, 99, 235, 0.1);
+  background-color: var(--info-bg);
   color: var(--primary-color);
 }
 
@@ -1850,7 +1888,7 @@ body {
 .form-control:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  box-shadow: 0 0 0 3px rgba(31, 136, 61, 0.1);
 }
 
 /* Custom Date Input Styles */
@@ -1884,7 +1922,7 @@ body {
 
 .custom-date-input:focus {
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  box-shadow: 0 0 0 3px rgba(31, 136, 61, 0.15);
   background-color: var(--modal-bg);
 }
 
@@ -1928,7 +1966,7 @@ body {
 .modal-select:focus {
   outline: none;
   border-color: var(--primary-color) !important;
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1) !important;
+  box-shadow: 0 0 0 3px rgba(31, 136, 61, 0.1) !important;
 }
 
 .modal-select option {
@@ -2145,8 +2183,8 @@ body {
 
   .modal-footer .primary-btn {
     order: 2;
-    background: linear-gradient(135deg, var(--primary-color) 0%, #1d4ed8 100%);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-hover) 100%);
+    box-shadow: 0 4px 12px rgba(31, 136, 61, 0.2);
   }
 
   .modal-footer .secondary-btn {
@@ -2502,18 +2540,28 @@ body {
   .justify-mobile-center {
     justify-content: center !important;
   }
+
+  .Toastify__toast-container {
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+    bottom: 1.5rem !important;
+  }
 }
 
 /* Roles Table Column Widths & Responsiveness */
 .col-role-name {
   width: 20%;
 }
+
 .col-permissions {
   width: 35%;
 }
+
 .col-notifications {
   width: 35%;
 }
+
 .col-actions {
   width: 10%;
 }
@@ -2522,23 +2570,585 @@ body {
   .col-role-name {
     width: 45% !important;
   }
+
   .col-permissions {
     width: 15% !important;
   }
+
   .col-notifications {
     width: 15% !important;
   }
+
   .col-actions {
     width: 25% !important;
     min-width: 90px !important;
   }
-  
+
   .data-table th,
   .data-table td {
     padding: 0.75rem 0.5rem !important;
   }
-  
+
   .action-buttons {
     gap: 0.25rem !important;
+  }
+}
+
+/* --- Permissions Redesign CSS --- */
+.permissions-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.permission-card {
+  background-color: var(--modal-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+  box-shadow: none;
+}
+
+.permission-card:hover {
+  background-color: var(--hover-bg);
+  border-color: var(--primary-color);
+}
+
+.permission-card-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+  width: 35%;
+  min-width: 200px;
+  flex-shrink: 0;
+}
+
+.permission-title-group {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.permission-title {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.permission-card-body {
+  border-top: none;
+  padding-top: 0;
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.permission-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.no-access-text {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+/* Action Badges Styles */
+.permission-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  transition: all 0.15s ease;
+}
+
+/* Light / Dark Mode Color Schemes for specific action badge states */
+.badge-adding {
+  background-color: var(--success-bg);
+  color: var(--success-color);
+}
+
+.badge-updating {
+  background-color: var(--warning-bg);
+  color: var(--warning-color);
+}
+
+.badge-deleting {
+  background-color: var(--danger-bg);
+  color: var(--danger-color);
+}
+
+.badge-getting,
+.badge-getAll {
+  background-color: var(--info-bg);
+  color: var(--info-color);
+}
+
+.badge-assigning {
+  background-color: var(--purple-bg);
+  color: var(--purple-color);
+}
+
+.badge-allowAll {
+  background: linear-gradient(135deg, var(--warning-bg) 0%, var(--danger-bg) 100%);
+  color: var(--warning-color);
+  border: 1px solid var(--warning-color);
+}
+
+/* Mobile responsive for Permissions */
+@media (max-width: 768px) {
+  .permission-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .permission-card-header {
+    width: 100%;
+  }
+
+  .permission-card-body {
+    justify-content: flex-start;
+  }
+}
+
+/* ============================================================
+   Dark Mode — Explicit Color Overrides
+   ============================================================ */
+
+/* 1. Primary button — vivid green */
+[data-theme='dark'] .primary-btn {
+  background-color: #238636;
+  color: #ffffff;
+  border-color: #2ea043;
+}
+
+[data-theme='dark'] .primary-btn:hover {
+  background-color: #2ea043;
+  border-color: #3fb950;
+  box-shadow: 0 0 0 3px rgba(46, 160, 67, 0.3);
+}
+
+[data-theme='dark'] .primary-btn-disabled {
+  background-color: #238636;
+  opacity: 0.45;
+  color: #ffffff;
+}
+
+/* 2. Generic badges — muted white/gray */
+[data-theme='dark'] .badge-pill {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #c9d1d9;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+[data-theme='dark'] .badge-primary {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #c9d1d9;
+}
+
+/* 3. Notification counter badge — red */
+[data-theme='dark'] .badge {
+  background-color: #f85149;
+  color: #ffffff;
+  border-color: #161b22;
+}
+
+/* 4. Checkboxes — blue accent */
+[data-theme='dark'] input[type="checkbox"] {
+  accent-color: #58a6ff;
+}
+
+/* 5. Icon buttons in header/table — white/gray */
+[data-theme='dark'] .icon-btn {
+  color: #c9d1d9;
+}
+
+[data-theme='dark'] .icon-btn:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+[data-theme='dark'] .icon-action-btn {
+  color: #8b949e;
+}
+
+[data-theme='dark'] .icon-action-btn:hover {
+  color: #c9d1d9;
+  background-color: rgba(255, 255, 255, 0.06);
+}
+
+[data-theme='dark'] .profile-icon {
+  color: #c9d1d9;
+}
+
+[data-theme='dark'] .text-secondary {
+  color: #8b949e;
+}
+
+/* Accessed Permissions Badges in Roles Management */
+.role-permission-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  background-color: rgba(9, 105, 218, 0.12);
+  color: #0969da;
+  border: 1px solid rgba(9, 105, 218, 0.25);
+}
+
+button.role-permission-badge {
+  cursor: pointer;
+}
+
+button.role-permission-badge:hover {
+  background-color: rgba(9, 105, 218, 0.2);
+  border-color: rgba(9, 105, 218, 0.45);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(9, 105, 218, 0.12);
+}
+
+[data-theme='dark'] .role-permission-badge {
+  background-color: rgba(255, 255, 255, 0.08);
+  color: #c9d1d9;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+[data-theme='dark'] button.role-permission-badge:hover {
+  background-color: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* View Toggle styles */
+.view-toggle-wrapper {
+  display: flex;
+  background: var(--hover-bg);
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  border: 1px solid var(--border-color);
+  align-items: center;
+  gap: 2px;
+}
+
+.view-toggle-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.view-toggle-btn:hover {
+  color: var(--text-primary);
+  background: rgba(148, 163, 184, 0.1);
+}
+
+.view-toggle-btn.active {
+  background: var(--hover-bg);
+  color: var(--text-secondary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+[data-theme='dark'] .view-toggle-btn.active {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.kanban-card-id-cancelled {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--danger-color);
+  background: var(--danger-bg);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 2px;
+  width: fit-content;
+  transition: all 0.2s;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.kanban-card-id-cancelled:hover {
+  background: var(--danger-bg);
+  filter: brightness(0.95);
+  transform: scale(1.05);
+}
+
+/* GitHub Commit-like list styles */
+.github-commit-list {
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background: var(--modal-bg);
+  overflow: hidden;
+  margin-top: 1rem;
+}
+
+.commit-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.2s ease;
+}
+
+.commit-item:last-child {
+  border-bottom: none;
+}
+
+.commit-item:hover {
+  background-color: var(--hover-bg);
+}
+
+.commit-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.commit-icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--hover-bg);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  flex-shrink: 0;
+}
+
+.commit-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.commit-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.commit-message {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.commit-badge-count {
+  font-size: 0.7rem;
+  font-weight: 600;
+  background: rgba(9, 105, 218, 0.1);
+  color: #0969da;
+  border: 1px solid rgba(9, 105, 218, 0.2);
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.commit-point-badge {
+  background: var(--hover-bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.commit-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  flex-wrap: wrap;
+}
+
+.commit-author {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.commit-divider {
+  color: var(--border-color);
+}
+
+.commit-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.status-badge-pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  text-transform: capitalize;
+}
+
+.status-badge-pill.completed {
+  background: var(--hover-bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+.status-badge-pill.serving {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.status-badge-pill.pending {
+  background: rgba(31, 136, 61, 0.1);
+  color: var(--primary-color);
+  border: 1px solid rgba(31, 136, 61, 0.2);
+}
+
+.status-badge-pill.cancelled {
+  background: var(--danger-bg);
+  color: var(--danger-color);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.commit-sha-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--modal-bg);
+  border: 1px solid var(--border-color);
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--text-primary);
+  font-family: monospace;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.commit-sha-btn:hover {
+  background: var(--hover-bg);
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+@media (max-width: 576px) {
+  .commit-actions {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.25rem;
+  }
+}
+
+/* Mobile responsive visibility and status background overrides */
+@media (max-width: 768px) {
+  .commit-item .commit-author,
+  .commit-item .commit-divider,
+  .commit-item .commit-icon-wrapper,
+  .commit-item .commit-badge-count,
+  .commit-item .commit-point-badge,
+  .commit-item .status-badge-pill {
+    display: none !important;
+  }
+
+  /* Background colors for Pending and Serving commit list items in mobile view */
+  .commit-item-pending {
+    background-color: var(--primary-color) !important;
+    border-left: 4px solid var(--primary-hover) !important;
+  }
+  .commit-item-pending:hover {
+    filter: brightness(0.95) !important;
+  }
+
+  .commit-item-serving {
+    background-color: #0969da !important;
+    border-left: 4px solid #085cc1 !important;
+  }
+  [data-theme='dark'] .commit-item-serving {
+    background-color: #1f6feb !important;
+    border-left: 4px solid #388bfd !important;
+  }
+  .commit-item-serving:hover {
+    filter: brightness(0.95) !important;
+  }
+
+  /* Make sure text, links, dividers, etc. turn white inside colored items */
+  .commit-item-pending,
+  .commit-item-pending .commit-message,
+  .commit-item-pending .commit-author,
+  .commit-item-pending .commit-subtitle,
+  .commit-item-pending .commit-divider,
+  .commit-item-pending .commit-time-slot,
+  .commit-item-serving,
+  .commit-item-serving .commit-message,
+  .commit-item-serving .commit-author,
+  .commit-item-serving .commit-subtitle,
+  .commit-item-serving .commit-divider,
+  .commit-item-serving .commit-time-slot {
+    color: #ffffff !important;
+  }
+
+  /* Adjust child element aesthetics inside colored items */
+  .commit-item-pending .commit-point-badge,
+  .commit-item-pending .commit-badge-count,
+  .commit-item-serving .commit-point-badge,
+  .commit-item-serving .commit-badge-count {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.35) !important;
+  }
+
+  .commit-item-pending .commit-sha-btn,
+  .commit-item-serving .commit-sha-btn {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.35) !important;
+  }
+  .commit-item-pending .commit-sha-btn:hover,
+  .commit-item-serving .commit-sha-btn:hover {
+    background: rgba(255, 255, 255, 0.35) !important;
+  }
+
+  .commit-item-pending .commit-icon-wrapper,
+  .commit-item-serving .commit-icon-wrapper {
+    background: rgba(255, 255, 255, 0.2) !important;
+    color: #ffffff !important;
+    border-color: rgba(255, 255, 255, 0.35) !important;
   }
 }

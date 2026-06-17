@@ -200,12 +200,12 @@ const Calendar = () => {
                     </div>
                     {allowAddHolidays ?
 
-                        <Button type="primary" onClick={() => setIsCommonHolidayModalOpen(true)}>
+                        <button className='primary-btn' onClick={() => setIsCommonHolidayModalOpen(true)}>
                             Common Holiday
-                        </Button> :
-                        <Button type="disabled" onClick={() => toast.warn("Required Holiday Add Permission")}>
+                        </button> :
+                        <button className="primary-btn-disabled" onClick={() => toast.warn("Required Holiday Add Permission")}>
                             Common Holiday
-                        </Button>
+                        </button>
                     }
 
                 </div>

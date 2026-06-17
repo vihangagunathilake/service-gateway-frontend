@@ -105,7 +105,7 @@ const AssignServiceToPointModal = ({ isOpen, onClose, service, centerId, initial
                                             padding: '1rem',
                                             borderRadius: '12px',
                                             border: `1px solid ${selectedPoints.includes(point.id) ? 'var(--primary-color)' : 'var(--border-color)'}`,
-                                            background: selectedPoints.includes(point.id) ? 'rgba(37, 99, 235, 0.05)' : 'transparent',
+                                            background: selectedPoints.includes(point.id) ? 'rgba(31, 136, 61, 0.05)' : 'transparent',
                                             cursor: 'pointer',
                                             transition: 'all 0.2s'
                                         }}

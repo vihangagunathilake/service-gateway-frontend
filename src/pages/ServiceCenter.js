@@ -618,10 +618,10 @@ const ServiceCenter = () => {
                     {servicePoints.length > 0 ? (
                         servicePoints.map(point => (
                             <div key={point.id} className="stat-card" style={{ padding: '1.5rem', border: '1px solid var(--border-color)', borderRadius: '16px', position: 'relative', overflow: 'hidden' }}>
-                                <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: !point.temporaryClosed ? '#10b981' : '#ef4444' }}></div>
+                                {/* <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: !point.temporaryClosed ? '#1f883d' : '#ef4444' }}></div> */}
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1rem' }}>
-                                    <div className="icon-box-primary" style={{ background: 'rgba(37, 99, 235, 0.1)', padding: '0.75rem', borderRadius: '12px' }}>
-                                        <span className='text-primary'>{point.shortName || <Layout size={24} className="text-primary" />}</span>
+                                    <div className="icon-box-primary" style={{ background: 'var(--hover-bg)', padding: '0.75rem', borderRadius: '12px' }}>
+                                        <span className='var(--text-secondary)'>{point.shortName || <Layout size={24} className="var(--text-secondary)" />}</span>
                                     </div>
                                     <span style={{
                                         fontSize: '0.75rem',
@@ -629,7 +629,7 @@ const ServiceCenter = () => {
                                         padding: '0.25rem 0.75rem',
                                         borderRadius: '20px',
                                         background: !point.temporaryClosed ? '#10b98115' : '#ef444415',
-                                        color: !point.temporaryClosed ? '#10b981' : '#ef4444',
+                                        color: !point.temporaryClosed ? '#1f883d' : '#ef4444',
                                         textTransform: 'uppercase',
                                         letterSpacing: '0.05em'
                                     }}>
@@ -639,11 +639,11 @@ const ServiceCenter = () => {
                                 <h4 style={{ margin: '0 0 0.5rem 0', fontSize: '1.1rem' }}>{point.name}</h4>
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
-                                        <Clock size={16} />
+                                        {/* <Clock size={16} /> */}
                                         <span>{point.openTime} - {point.closeTime}</span>
                                     </div>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.25rem' }}>
-                                        <Briefcase size={14} style={{ color: 'var(--primary-color)' }} />
+                                        {/* <Briefcase size={14} style={{ color: 'var(--text-secondary)' }} /> */}
                                         <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                                             {point.serviceCount} service(s) assigned
                                         </span>
@@ -652,7 +652,7 @@ const ServiceCenter = () => {
                                         {allowGetServicePointDetails ? (
                                             <button
                                                 className="icon-action-btn text-primary"
-                                                style={{ color: 'var(--primary-color)' }}
+                                                style={{ color: 'var(--text-secondary)' }}
                                                 onClick={() => {
                                                     setSelectedPointForServices(point);
                                                     setIsManageServicesModalOpen(true);
@@ -663,7 +663,7 @@ const ServiceCenter = () => {
                                         ) : (
                                             <button
                                                 className="icon-action-btn-disabled text-primary"
-                                                style={{ color: 'var(--primary-color)' }}
+                                                style={{ color: 'var(--text-secondary)' }}
                                                 onClick={() => { toast.warn("Required Points Get Permission"); }}
                                             >
                                                 <Briefcase size={16} />
@@ -784,9 +784,9 @@ const ServiceCenter = () => {
                                         position: 'relative',
                                         cursor: 'pointer',
                                         transition: 'all 0.3s ease',
-                                        background: selectedCluster === cluster.id ? 'rgba(37, 99, 235, 0.05)' : 'var(--card-bg)',
+                                        background: selectedCluster === cluster.id ? 'rgba(31, 136, 61, 0.05)' : 'var(--card-bg)',
                                         transform: selectedCluster === cluster.id ? 'translateY(-2px)' : 'none',
-                                        boxShadow: selectedCluster === cluster.id ? '0 8px 16px rgba(37, 99, 235, 0.15)' : 'none'
+                                        boxShadow: selectedCluster === cluster.id ? '0 8px 16px rgba(31, 136, 61, 0.15)' : 'none'
                                     }}
                                 >
                                     {
@@ -837,12 +837,17 @@ const ServiceCenter = () => {
 
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', paddingRight: '2rem' }}>
                                         <div className="icon-box-primary" style={{
-                                            background: selectedCluster === cluster.id ? 'rgba(37, 99, 235, 0.2)' : 'rgba(37, 99, 235, 0.1)',
+                                            background: selectedCluster === cluster.id ? 'rgba(31, 136, 61, 0.1)' : 'var(--hover-bg)',
                                             padding: '0.75rem',
                                             borderRadius: '12px',
                                             transition: 'all 0.3s ease'
                                         }}>
-                                            <Layers size={24} className="text-primary" />
+                                            {selectedCluster === cluster.id ? (
+                                                <Layers size={24} className="text-primary" />
+
+                                            ) : (
+                                                <Layers size={24} className="var(--text-secondary)" />
+                                            )}
                                         </div>
                                         <h4 style={{ margin: '0', fontSize: '1.1rem' }}>{cluster.name}</h4>
                                     </div>
@@ -877,7 +882,7 @@ const ServiceCenter = () => {
                         }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
                                 <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                    <Briefcase size={20} className="text-primary" />
+                                    <Briefcase size={20} className="var(--text-secondary)" />
                                     Workflow Services
                                 </h4>
                                 <span style={{
@@ -918,17 +923,9 @@ const ServiceCenter = () => {
                                                             background: service.disabled ? 'var(--hover-bg)' : 'transparent'
                                                         }}>
                                                             <td className="mobile-hidden">
-                                                                <span style={{
-                                                                    display: 'inline-flex',
-                                                                    alignItems: 'center',
-                                                                    justifyContent: 'center',
+                                                                <span className="order-number-badge" style={{
                                                                     width: '32px',
-                                                                    height: '32px',
-                                                                    borderRadius: '8px',
-                                                                    background: 'rgba(37, 99, 235, 0.1)',
-                                                                    color: 'var(--primary-color)',
-                                                                    fontWeight: '600',
-                                                                    fontSize: '0.9rem'
+                                                                    height: '32px'
                                                                 }}>
                                                                     {service.orderNumber}
                                                                 </span>
@@ -943,13 +940,13 @@ const ServiceCenter = () => {
                                                             <td className="mobile-hidden">
                                                                 <span style={{
                                                                     fontWeight: '600',
-                                                                    color: 'var(--primary-color)'
+                                                                    color: 'var(--text-secondary)'
                                                                 }}>
                                                                     Rs. {service.total.toLocaleString()}
                                                                 </span>
                                                             </td>
                                                             <td className="mobile-hidden">
-                                                                <span style={{ color: service.downPay > 0 ? '#10b981' : 'var(--text-secondary)' }}>
+                                                                <span style={{ color: 'var(--text-secondary)' }}>
                                                                     Rs. {service.downPay.toLocaleString()}
                                                                 </span>
                                                             </td>
@@ -959,8 +956,8 @@ const ServiceCenter = () => {
                                                                     fontWeight: '600',
                                                                     padding: '0.35rem 0.75rem',
                                                                     borderRadius: '20px',
-                                                                    background: service.disabled ? '#ef444415' : '#10b98115',
-                                                                    color: service.disabled ? '#ef4444' : '#10b981',
+                                                                    background: service.disabled ? '#ef444415' : 'var(--hover-bg)',
+                                                                    color: service.disabled ? '#ef4444' : 'var(--text-secondary)',
                                                                     textTransform: 'uppercase',
                                                                     letterSpacing: '0.05em'
                                                                 }}>
@@ -971,10 +968,11 @@ const ServiceCenter = () => {
                                                                 <td>
                                                                     <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
                                                                         <button
-                                                                            className="icon-action-btn text-primary"
+                                                                            className="icon-action-btn"
                                                                             onClick={() => handleEditClusterService(service)}
                                                                             title="Edit Service"
                                                                             style={{
+                                                                                color: 'var(--text-secondary)',
                                                                                 transition: 'all 0.2s ease'
                                                                             }}
                                                                         >
@@ -985,7 +983,7 @@ const ServiceCenter = () => {
                                                                             onClick={() => handleToggleServiceStatus(service)}
                                                                             title={service.disabled ? 'Enable Service' : 'Disable Service'}
                                                                             style={{
-                                                                                color: service.disabled ? '#10b981' : '#ef4444',
+                                                                                color: service.disabled ? '#1f883d' : '#ef4444',
                                                                                 transition: 'all 0.2s ease'
                                                                             }}
                                                                         >
@@ -1002,10 +1000,11 @@ const ServiceCenter = () => {
                                                                     <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center' }}>
 
                                                                         <button
-                                                                            className="icon-action-btn-disabled text-primary"
+                                                                            className="icon-action-btn-disabled"
                                                                             onClick={() => { toast.warn("Required Assigned Cluster Update Permission"); }}
                                                                             title="Edit Service"
                                                                             style={{
+                                                                                color: 'var(--text-secondary)',
                                                                                 transition: 'all 0.2s ease'
                                                                             }}
                                                                         >
@@ -1016,7 +1015,7 @@ const ServiceCenter = () => {
                                                                             onClick={() => { toast.warn("Required Assigned Cluster Update Permission"); }}
                                                                             title={service.disabled ? 'Enable Service' : 'Disable Service'}
                                                                             style={{
-                                                                                color: service.disabled ? '#10b981' : '#ef4444',
+                                                                                color: service.disabled ? '#1f883d' : '#ef4444',
                                                                                 transition: 'all 0.2s ease'
                                                                             }}
                                                                         >
@@ -1166,7 +1165,7 @@ const ServiceCenter = () => {
             <div className="service-center-detail-grid">
                 {/* Sidebar Details Card */}
                 <div className="content-card center-info-sidebar">
-                    <h4 style={{ marginBottom: '1.5rem', color: 'var(--primary-color)' }}>General Info</h4>
+                    <h4 style={{ marginBottom: '1.5rem', color: 'var(--text-secondary)' }}>General Info</h4>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
                         <div style={{ display: 'flex', gap: '0.75rem' }}>
                             <MapPin size={18} className="text-muted" style={{ flexShrink: 0 }} />
@@ -1193,7 +1192,7 @@ const ServiceCenter = () => {
                             <Clock size={18} className="text-muted" style={{ flexShrink: 0 }} />
                             <div style={{ minWidth: 0 }}>
                                 <small style={{ color: 'var(--text-secondary)', display: 'block' }}>Opening Hours</small>
-                                <span style={{ fontSize: '0.9rem', color: '#10b981', overflowWrap: 'break-word' }}>
+                                <span style={{ fontSize: '0.9rem', color: '#1f883d', overflowWrap: 'break-word' }}>
                                     {centerDetails.fopenTime} - {centerDetails.fcloseTime}
                                 </span>
                             </div>

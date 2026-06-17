@@ -138,7 +138,7 @@ const ServiceProviderProfile = () => {
     };
 
     const getCenterStatusBadgeClass = (status) => {
-        return status === 'Active' || status === 'Opened' ? 'badge-pill badge-success' : 'badge-pill badge-warning';
+        return status === 'Active' || status === 'Opened' ? 'badge-pill badge-primary' : 'badge-pill badge-neutral';
     };
 
     return (
@@ -168,14 +168,14 @@ const ServiceProviderProfile = () => {
                 {/* Left Column: Provider Identity */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     <div className="content-card" style={{ padding: '0', overflow: 'hidden', textAlign: 'center' }}>
-                        <div style={{ background: 'linear-gradient(135deg, #F97316 0%, #F59E0B 100%)', height: '140px' }}></div>
+                        <div style={{ background: 'var(--primary-color)', height: '140px' }}></div>
                         <div style={{ marginTop: '-70px', padding: '0 1.5rem 2rem' }}>
                             <div style={{
                                 width: '140px',
                                 height: '140px',
                                 borderRadius: '1rem',
-                                border: '4px solid #1e293b',
-                                background: '#1e293b',
+                                border: '4px solid var(--modal-bg)',
+                                background: 'var(--primary-color)',
                                 margin: '0 auto 1rem',
                                 display: 'flex',
                                 justifyContent: 'center',
@@ -223,19 +223,19 @@ const ServiceProviderProfile = () => {
                                         ) : (
                                             <>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.95rem' }}>
-                                                    <Mail size={16} className="text-primary" style={{ flexShrink: 0 }} />
+                                                    <Mail size={16} className="text-secondary" style={{ flexShrink: 0 }} />
                                                     {provider.email}
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.95rem' }}>
-                                                    <Phone size={16} className="text-primary" style={{ flexShrink: 0 }} />
+                                                    <Phone size={16} className="text-secondary" style={{ flexShrink: 0 }} />
                                                     {provider.contact}
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.95rem' }}>
-                                                    <Globe size={16} className="text-primary" style={{ flexShrink: 0 }} />
+                                                    <Globe size={16} className="text-secondary" style={{ flexShrink: 0 }} />
                                                     {provider.website}
                                                 </div>
                                                 <div style={{ display: 'flex', alignItems: 'start', gap: '0.75rem', fontSize: '0.95rem' }}>
-                                                    <MapPin size={16} className="text-primary" style={{ marginTop: '3px', flexShrink: 0 }} />
+                                                    <MapPin size={16} className="text-secondary" style={{ marginTop: '3px', flexShrink: 0 }} />
                                                     {provider.address}
                                                 </div>
                                             </>
@@ -268,7 +268,7 @@ const ServiceProviderProfile = () => {
                         ) : (
                             <>
                                 <h4 className="card-title">
-                                    <Shield className="text-primary" size={20} style={{ marginRight: '0.5rem' }} />
+                                    <Shield className="text-secondary" size={20} style={{ marginRight: '0.5rem' }} />
                                     About Provider
                                 </h4>
                                 <p style={{ color: '#cbd5e1', lineHeight: '1.6' }}>{provider.description}</p>
@@ -287,7 +287,7 @@ const ServiceProviderProfile = () => {
                         {!centersLoading ?
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                                 <h4 style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                                    <MapPin size={20} className="text-success" />
+                                    <MapPin size={20} className="text-secondary" />
                                     Service Centers
                                 </h4>
                             </div>
@@ -310,7 +310,7 @@ const ServiceProviderProfile = () => {
                             ) : serviceCenters.length > 0 ? (
                                 serviceCenters.map(center => (
                                     <div key={center.id} className="content-card" style={{
-                                        borderLeft: `4px solid ${center.status === 'Opened' || center.status === 'Active' ? '#10b981' : '#f59e0b'}`,
+                                        borderLeft: center.status === 'Opened' || center.status === 'Active' ? 'none' : '4px solid var(--border-color)',
                                         transition: 'transform 0.2s',
                                         cursor: 'pointer',
                                         marginBottom: 0

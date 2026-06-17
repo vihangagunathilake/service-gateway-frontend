@@ -267,7 +267,7 @@ const Header = ({ toggleSidebar }) => {
                                     <span>Settings</span>
                                 </button>
                                 <div className="dropdown-divider"></div>
-                                <button onClick={handleLogout} className="dropdown-item text-danger">
+                                <button onClick={handleLogout} className="dropdown-item text-primary">
                                     <LogOut size={16} />
                                     <span>Logout</span>
                                 </button>

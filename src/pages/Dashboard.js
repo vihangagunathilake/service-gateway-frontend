@@ -407,7 +407,7 @@ const Dashboard = () => {
                             </div>
                         </div>
                         {/* <div style={{
-                            padding: '10px', background: 'rgba(37, 99, 235, 0.1)',
+                            padding: '10px', background: 'rgba(31, 136, 61, 0.1)',
                             color: 'var(--primary-color)', borderRadius: '10px'
                         }}>
                             <Building2 size={20} />

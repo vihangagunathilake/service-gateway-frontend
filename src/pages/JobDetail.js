@@ -258,7 +258,7 @@ const JobDetail = () => {
                     {/* Service Information */}
                     <div className="content-card" style={{ padding: '1.5rem' }}>
                         <h4 style={{ marginBottom: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <Package size={18} className="text-primary" />
+                            <Package size={18} style={{ color: 'var(--text-secondary)' }} />
                             Service Information
                         </h4>
                         <div className="job-service-info-grid">
@@ -298,7 +298,7 @@ const JobDetail = () => {
                     {/* MUI Timeline — SubJobDetails */}
                     <div className="content-card job-timeline-card" style={{ padding: '1.5rem' }}>
                         <h4 style={{ marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <Clock4 size={18} className="text-primary" />
+                            <Clock4 size={18} style={{ color: 'var(--text-secondary)' }} />
                             Service Timeline
                         </h4>
 
@@ -428,7 +428,7 @@ const JobDetail = () => {
                     {/* Customer Card */}
                     <div className="content-card" style={{ padding: '1.5rem' }}>
                         <h4 style={{ marginBottom: '1.2rem', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <User size={18} className="text-primary" />
+                            <User size={18} style={{ color: 'var(--text-secondary)' }} />
                             Customer Details - {job.customer || ''}
                         </h4>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

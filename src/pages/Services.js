@@ -426,10 +426,10 @@ const Services = () => {
                                             <td className="mobile-hidden">
                                                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                                     <button
-                                                        className="icon-action-btn text-info"
+                                                        className="icon-action-btn var(--text-secondary)"
                                                         title="View Description"
                                                         onClick={() => handleInfoClick(service.description)}
-                                                        style={{ color: '#0ea5e9' }}
+                                                        style={{ color: 'var(--text-secondary)' }}
                                                     >
                                                         <Info size={18} />
                                                     </button>

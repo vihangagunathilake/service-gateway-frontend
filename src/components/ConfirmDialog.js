@@ -26,10 +26,10 @@ const ConfirmDialog = ({
         if (IconProp) return <IconProp size={24} className={`text-${type}`} />;
 
         switch (type) {
-            case 'success': return <CheckCircle2 size={24} className="text-success" />;
-            case 'warning': return <ShieldAlert size={24} className="text-warning" />;
-            case 'primary': return <AlertTriangle size={24} className="text-primary" />;
-            default: return <AlertTriangle size={24} className="text-danger" />;
+            case 'success': return <CheckCircle2 size={24} className="text-secondary" />;
+            case 'warning': return <ShieldAlert size={24} className="text-secondary" />;
+            case 'primary': return <AlertTriangle size={24} className="text-secondary" />;
+            default: return <AlertTriangle size={24} className="text-secondary" />;
         }
     };
 
