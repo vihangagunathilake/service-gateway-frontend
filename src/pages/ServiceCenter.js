@@ -66,7 +66,7 @@ const ServiceCenter = () => {
 
     const canAddCenter = () =>
         hasPermissionAccess(
-            'Center Management',
+            'Centers Management',
             'adding'
         );
 

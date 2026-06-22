@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Mail, Phone, MapPin, Globe, Shield, Clock, Building, CheckCircle, AlertCircle, Search, Filter, Edit2, Save, X } from 'lucide-react';
+import ReactDOM from 'react-dom';
+import { Mail, Phone, MapPin, Globe, Shield, Clock, Building, CheckCircle, AlertCircle, Search, Filter, Edit2, Save, X, Check } from 'lucide-react';
 import '../App.css';
+import axios from 'axios';
+import { getConfig } from '../config';
 import { getServiceProviderProfile, updateServiceProviderProfile, getSummarizedServiceCenters } from '../services/serviceProviderService';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
@@ -29,6 +32,92 @@ const ServiceProviderProfile = () => {
 
     const fetchInitiated = useRef(false);
 
+    // Profile image
+    const [profileImage, setProfileImage] = useState(null);
+    const [profileImageFile, setProfileImageFile] = useState(null);
+    const [profileImagePending, setProfileImagePending] = useState(false);
+    const profileImageRef = useRef(null);
+    const profileImageFileRef = useRef(null);
+    const profileImageDivRef = useRef(null);
+    const [profileImageRect, setProfileImageRect] = useState(null);
+
+    // Cover photo
+    const [coverPhoto, setCoverPhoto] = useState(null);
+    const [coverPhotoFile, setCoverPhotoFile] = useState(null);
+    const [coverPhotoPending, setCoverPhotoPending] = useState(false);
+    const coverPhotoRef = useRef(null);
+    const coverPhotoFileRef = useRef(null);
+    const coverPhotoDivRef = useRef(null);
+    const [coverPhotoRect, setCoverPhotoRect] = useState(null);
+
+    const handleProfileImageChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        profileImageFileRef.current = file;
+        setProfileImageFile(file);
+        setProfileImage(URL.createObjectURL(file));
+        if (profileImageDivRef.current) {
+            setProfileImageRect(profileImageDivRef.current.getBoundingClientRect());
+        }
+        setProfileImagePending(true);
+    };
+
+    const handleSaveProfileImage = async () => {
+        const file = profileImageFileRef.current;
+        if (!file) return;
+        try {
+            const baseUrl = getConfig().baseUrl;
+            const token = localStorage.getItem('token');
+            const formData = new FormData();
+            formData.append('multipartFile', file);
+            await axios.post(`${baseUrl}/service-provider/profile-image`, formData, {
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
+            });
+            toast.success('Profile image updated successfully');
+            profileImageFileRef.current = null;
+            setProfileImageFile(null);
+            setProfileImagePending(false);
+        } catch (error) {
+            const msg = error?.response?.data?.data || 'Failed to update profile image';
+            if (error?.response?.data?.code === 1) { toast.info('Session expired. Please login again.'); navigate('/login'); }
+            else toast.error(msg);
+        }
+    };
+
+    const handleCoverPhotoChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        coverPhotoFileRef.current = file;
+        setCoverPhotoFile(file);
+        setCoverPhoto(URL.createObjectURL(file));
+        if (coverPhotoDivRef.current) {
+            setCoverPhotoRect(coverPhotoDivRef.current.getBoundingClientRect());
+        }
+        setCoverPhotoPending(true);
+    };
+
+    const handleSaveCoverPhoto = async () => {
+        const file = coverPhotoFileRef.current;
+        if (!file) return;
+        try {
+            const baseUrl = getConfig().baseUrl;
+            const token = localStorage.getItem('token');
+            const formData = new FormData();
+            formData.append('multipartFile', file);
+            await axios.post(`${baseUrl}/service-provider/cover-image`, formData, {
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'multipart/form-data' }
+            });
+            toast.success('Cover image updated successfully');
+            coverPhotoFileRef.current = null;
+            setCoverPhotoFile(null);
+            setCoverPhotoPending(false);
+        } catch (error) {
+            const msg = error?.response?.data?.data || 'Failed to update cover image';
+            if (error?.response?.data?.code === 1) { toast.info('Session expired. Please login again.'); navigate('/login'); }
+            else toast.error(msg);
+        }
+    };
+
     const { hasPermissionAccess } = useUser();
 
     const canEditServiceProvider = () =>
@@ -51,6 +140,8 @@ const ServiceProviderProfile = () => {
         try {
             const data = await getServiceProviderProfile();
             setProvider(data);
+            if (data.profile) setProfileImage(data.profile);
+            if (data.cover) setCoverPhoto(data.cover);
         } catch (error) {
             if (error?.response?.data?.data) {
                 if (error?.response?.data?.code === 1) {
@@ -168,9 +259,98 @@ const ServiceProviderProfile = () => {
                 {/* Left Column: Provider Identity */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
                     <div className="content-card" style={{ padding: '0', overflow: 'hidden', textAlign: 'center' }}>
-                        <div style={{ background: 'var(--primary-color)', height: '140px' }}></div>
+
+                        {/* Cover photo portal buttons */}
+                        {coverPhotoPending && coverPhotoRect && ReactDOM.createPortal(
+                            <>
+                                <button type="button"
+                                    onClick={() => { coverPhotoFileRef.current = null; setCoverPhoto(null); setCoverPhotoFile(null); setCoverPhotoPending(false); }}
+                                    style={{
+                                        position: 'fixed',
+                                        top: coverPhotoRect.top + 10,
+                                        right: window.innerWidth - coverPhotoRect.right + 48,
+                                        zIndex: 9999,
+                                        background: 'rgba(0,0,0,0.55)', border: 'none', borderRadius: '50%',
+                                        width: '32px', height: '32px', display: 'flex', alignItems: 'center',
+                                        justifyContent: 'center', color: 'white', cursor: 'pointer',
+                                    }}>
+                                    <X size={15} />
+                                </button>
+                                <button type="button"
+                                    onClick={() => handleSaveCoverPhoto()}
+                                    style={{
+                                        position: 'fixed',
+                                        top: coverPhotoRect.top + 10,
+                                        right: window.innerWidth - coverPhotoRect.right + 10,
+                                        zIndex: 9999,
+                                        background: '#22c55e', border: 'none', borderRadius: '50%',
+                                        width: '32px', height: '32px', display: 'flex', alignItems: 'center',
+                                        justifyContent: 'center', color: 'white', cursor: 'pointer',
+                                    }}>
+                                    <Check size={15} />
+                                </button>
+                            </>,
+                            document.body
+                        )}
+
+                        {/* Profile image portal buttons */}
+                        {profileImagePending && profileImageRect && ReactDOM.createPortal(
+                            <>
+                                <button type="button"
+                                    onClick={() => { profileImageFileRef.current = null; setProfileImage(null); setProfileImageFile(null); setProfileImagePending(false); }}
+                                    style={{
+                                        position: 'fixed',
+                                        top: profileImageRect.bottom - 32,
+                                        left: profileImageRect.left,
+                                        zIndex: 9999,
+                                        background: 'rgba(0,0,0,0.55)', border: 'none', borderRadius: '50%',
+                                        width: '28px', height: '28px', display: 'flex', alignItems: 'center',
+                                        justifyContent: 'center', color: 'white', cursor: 'pointer',
+                                    }}>
+                                    <X size={13} />
+                                </button>
+                                <button type="button"
+                                    onClick={() => handleSaveProfileImage()}
+                                    style={{
+                                        position: 'fixed',
+                                        top: profileImageRect.bottom - 32,
+                                        left: profileImageRect.right - 28,
+                                        zIndex: 9999,
+                                        background: '#22c55e', border: 'none', borderRadius: '50%',
+                                        width: '28px', height: '28px', display: 'flex', alignItems: 'center',
+                                        justifyContent: 'center', color: 'white', cursor: 'pointer',
+                                    }}>
+                                    <Check size={13} />
+                                </button>
+                            </>,
+                            document.body
+                        )}
+
+                        {/* Cover photo */}
+                        <div style={{ position: 'relative' }}>
+                            <div ref={coverPhotoDivRef} style={{
+                                backgroundColor: 'var(--primary-color)',
+                                backgroundImage: coverPhoto ? `url(${coverPhoto})` : 'none',
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                backgroundRepeat: 'no-repeat',
+                                height: '140px',
+                            }} />
+                            {!coverPhotoPending && (
+                                <button type="button" onClick={() => coverPhotoRef.current?.click()} style={{
+                                    position: 'absolute', top: '10px', right: '10px',
+                                    background: 'rgba(0,0,0,0.55)', border: 'none', borderRadius: '50%',
+                                    width: '32px', height: '32px', display: 'flex', alignItems: 'center',
+                                    justifyContent: 'center', color: 'white', cursor: 'pointer', zIndex: 2,
+                                }}>
+                                    <Edit2 size={15} />
+                                </button>
+                            )}
+                            <input type="file" accept="image/*" ref={coverPhotoRef} style={{ display: 'none' }} onChange={handleCoverPhotoChange} />
+                        </div>
+
                         <div style={{ marginTop: '-70px', padding: '0 1.5rem 2rem' }}>
-                            <div style={{
+                            <div ref={profileImageDivRef} style={{
                                 width: '140px',
                                 height: '140px',
                                 borderRadius: '1rem',
@@ -183,9 +363,25 @@ const ServiceProviderProfile = () => {
                                 fontSize: '3.5rem',
                                 fontWeight: 'bold',
                                 color: 'white',
-                                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.3)'
+                                boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.3)',
+                                overflow: 'hidden',
+                                position: 'relative',
                             }}>
-                                {!loading && <Building size={64} />}
+                                {profileImage
+                                    ? <img src={profileImage} alt="Provider" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    : (!loading && <Building size={64} />)
+                                }
+                                {!loading && !profileImagePending && (
+                                    <button type="button" onClick={() => profileImageRef.current?.click()} style={{
+                                        position: 'absolute', bottom: '0', right: '0',
+                                        background: 'rgba(0,0,0,0.55)', border: 'none', borderRadius: '50%',
+                                        width: '28px', height: '28px', display: 'flex', alignItems: 'center',
+                                        justifyContent: 'center', color: 'white', cursor: 'pointer',
+                                    }}>
+                                        <Edit2 size={13} />
+                                    </button>
+                                )}
+                                <input type="file" accept="image/*" ref={profileImageRef} style={{ display: 'none' }} onChange={handleProfileImageChange} />
                             </div>
 
                             {loading ? (
@@ -206,10 +402,10 @@ const ServiceProviderProfile = () => {
                                 </>
                             )}
 
-                            <div style={{ textAlign: 'left', background: 'rgba(255,255,255,0.03)', padding: '1.5rem', borderRadius: '1rem' }}>
+                            <div style={{ textAlign: 'left', background: 'var(--hover-bg)', padding: '1.5rem', borderRadius: '1rem' }}>
                                 <div className="detail-group">
                                     {!loading ?
-                                        <label style={{ color: '#94a3b8', fontSize: '0.875rem', marginBottom: '0.5rem', display: 'block' }}>Contact Information</label>
+                                        <label style={{ color: 'var(--text-secondary)', fontSize: '0.875rem', marginBottom: '0.5rem', display: 'block' }}>Contact Information</label>
                                         : null}
 
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -258,7 +454,7 @@ const ServiceProviderProfile = () => {
                                 <Skeleton variant="text" width="100%" sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
                                 <Skeleton variant="text" width="90%" sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
                                 <Skeleton variant="text" width="80%" sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
-                                <div style={{ display: 'flex', gap: '2rem', marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                                <div style={{ display: 'flex', gap: '2rem', marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
                                     <div>
                                         {/* <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Active Since</div> */}
                                         <Skeleton variant="text" width={120} height={32} sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
@@ -268,13 +464,12 @@ const ServiceProviderProfile = () => {
                         ) : (
                             <>
                                 <h4 className="card-title">
-                                    <Shield className="text-secondary" size={20} style={{ marginRight: '0.5rem' }} />
                                     About Provider
                                 </h4>
-                                <p style={{ color: '#cbd5e1', lineHeight: '1.6' }}>{provider.description}</p>
-                                <div style={{ display: 'flex', gap: '2rem', marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                                <p style={{ color: 'var(--text-secondary)', lineHeight: '1.6', marginTop: '1rem' }}>{provider.description}</p>
+                                <div style={{ display: 'flex', gap: '2rem', marginTop: '1.5rem', paddingTop: '1.5rem', borderTop: '1px solid var(--border-color)' }}>
                                     <div>
-                                        <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Active Since</div>
+                                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>Active Since</div>
                                         <div style={{ fontSize: '1.5rem', fontWeight: 'bold' }}>{provider.joinDate}</div>
                                     </div>
                                 </div>
@@ -320,7 +515,7 @@ const ServiceProviderProfile = () => {
                                             <span className={getCenterStatusBadgeClass(center.status)} style={{ fontSize: '0.75rem' }}>{center.status}</span>
                                         </div>
 
-                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem', color: '#cbd5e1' }}>
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.9rem', color: 'var(--text-secondary)' }}>
                                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                                                 <MapPin size={14} className="text-muted" />
                                                 {center.location}
@@ -333,8 +528,8 @@ const ServiceProviderProfile = () => {
                                     </div>
                                 ))
                             ) : (
-                                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem', border: '1px dashed #334155', borderRadius: '1rem' }}>
-                                    <p style={{ color: '#94a3b8' }}>No service centers found.</p>
+                                <div style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '2rem', border: '1px dashed var(--border-color)', borderRadius: '1rem' }}>
+                                    <p style={{ color: 'var(--text-secondary)' }}>No service centers found.</p>
                                 </div>
                             )}
                         </div>
@@ -444,10 +639,10 @@ const ServiceProviderProfile = () => {
                                             style={{
                                                 width: '100%',
                                                 padding: '0.8rem',
-                                                background: 'rgba(255,255,255,0.05)',
-                                                border: '1px solid rgba(255,255,255,0.1)',
+                                                background: 'var(--input-bg)',
+                                                border: '1px solid var(--border-color)',
                                                 borderRadius: '0.5rem',
-                                                color: 'white',
+                                                color: 'var(--text-primary)',
                                                 fontSize: '0.95rem',
                                                 fontFamily: 'inherit',
                                                 resize: 'vertical'

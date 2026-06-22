@@ -25,7 +25,8 @@ export const UserProvider = ({ children }) => {
         userType: '',
         provider: '',
         providerId: '',
-        userId: ''
+        userId: '',
+        image: null
     });
 
     const [permissions, setPermissions] = useState([]);
@@ -84,7 +85,8 @@ export const UserProvider = ({ children }) => {
                 userType: userData.userType || 'User',
                 provider: userData.serviceCenter || '',
                 providerId: userData.providerId || '',
-                userId: userData.userId || userData.id || ''
+                userId: userData.userId || userData.id || '',
+                image: userData.image || null
             });
 
             setPermissions(userPermissions || []);

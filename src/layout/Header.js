@@ -47,13 +47,13 @@ const Header = ({ toggleSidebar }) => {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
 
-                if (response.data && response.data.data) {
-                    const data = response.data.data;
-                    setNotifications(data);
+            if (response.data && response.data.data) {
+                const data = response.data.data;
+                setNotifications(data);
 
-                    // Set count to the number of unread notifications
-                    setNotificationCount(data.filter(n => !(n.read || n.isRead)).length);
-                }
+                // Set count to the number of unread notifications
+                setNotificationCount(data.filter(n => !(n.read || n.isRead)).length);
+            }
         } catch (error) {
             console.error('Failed to fetch notification summary:', error);
         }
@@ -69,7 +69,7 @@ const Header = ({ toggleSidebar }) => {
     // WebSocket connection for notifications
     useEffect(() => {
         let socketUserId = userInfo?.userId;
-        
+
         // Fallback to extract userId from JWT token if missing from context
         if (!socketUserId) {
             const token = localStorage.getItem('token');
@@ -77,7 +77,7 @@ const Header = ({ toggleSidebar }) => {
                 try {
                     const base64Url = token.split('.')[1];
                     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-                    const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+                    const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
                         return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
                     }).join(''));
                     socketUserId = JSON.parse(jsonPayload).user || '';
@@ -172,7 +172,7 @@ const Header = ({ toggleSidebar }) => {
                         <Menu size={24} />
                     </button>
                     <h2 className="header-title">{userInfo.provider}</h2>
-                    <span className="badge-pill">{userInfo.providerId}</span>
+                    <span className="commit-badge-count-disabled">{userInfo.providerId}</span>
                 </div>
                 <div className="header-right">
                     {hasPermission('Notification Permission') && (
@@ -199,28 +199,28 @@ const Header = ({ toggleSidebar }) => {
                                                     key={notif.id || idx}
                                                     className={`notification-dropdown-item ${(notif.read || notif.isRead) ? '' : 'unread'}`}
                                                     onClick={async () => {
-                                                    if (!(notif.read || notif.isRead) && notif.id) {
-                                                        try {
-                                                            const baseUrl = getConfig().baseUrl || 'http://localhost:8686/service-gateway';
-                                                            const token = localStorage.getItem('token');
-                                                            await axios.put(`${baseUrl}/notification/user-notification/${notif.id}/mark-as-read`, {}, {
-                                                                headers: { 'Authorization': `Bearer ${token}` }
-                                                            });
+                                                        if (!(notif.read || notif.isRead) && notif.id) {
+                                                            try {
+                                                                const baseUrl = getConfig().baseUrl || 'http://localhost:8686/service-gateway';
+                                                                const token = localStorage.getItem('token');
+                                                                await axios.put(`${baseUrl}/notification/user-notification/${notif.id}/mark-as-read`, {}, {
+                                                                    headers: { 'Authorization': `Bearer ${token}` }
+                                                                });
 
-                                                            // Update local state to immediately show it as read
-                                                            const updated = notifications.map(n => n.id === notif.id ? { ...n, read: true, isRead: true } : n);
-                                                            setNotifications(updated);
-                                                            setNotificationCount(updated.filter(n => !(n.read || n.isRead)).length);
-                                                        } catch (err) {
-                                                            console.error('Failed to mark notification as read:', err);
+                                                                // Update local state to immediately show it as read
+                                                                const updated = notifications.map(n => n.id === notif.id ? { ...n, read: true, isRead: true } : n);
+                                                                setNotifications(updated);
+                                                                setNotificationCount(updated.filter(n => !(n.read || n.isRead)).length);
+                                                            } catch (err) {
+                                                                console.error('Failed to mark notification as read:', err);
+                                                            }
                                                         }
-                                                    }
 
-                                                    if (notif.link) {
-                                                        navigate(notif.link);
-                                                        setIsNotificationOpen(false);
-                                                    }
-                                                }}>
+                                                        if (notif.link) {
+                                                            navigate(notif.link);
+                                                            setIsNotificationOpen(false);
+                                                        }
+                                                    }}>
                                                     <p><b>{notif.count}</b> {notif.description}</p>
                                                 </div>
                                             ))
@@ -242,7 +242,10 @@ const Header = ({ toggleSidebar }) => {
                             className="profile-trigger"
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                         >
-                            <UserCircle size={32} className="profile-icon" />
+                            {userInfo.image
+                                ? <img src={userInfo.image} alt="profile" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover' }} />
+                                : <UserCircle size={32} className="profile-icon" />
+                            }
                             <span className="profile-name">{userInfo.name}</span>
                         </button>
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Mail, Phone, FileText, Shield, MapPin, Edit2, Calendar, User, Camera, X, Save, Lock, Briefcase, Bell, BellOff, RotateCcw, Loader2 } from 'lucide-react';
+import ReactDOM from 'react-dom';
+import { Mail, Phone, FileText, Shield, MapPin, Edit2, Calendar, User, Camera, X, Save, Lock, Briefcase, Bell, BellOff, RotateCcw, Loader2, Check } from 'lucide-react';
 import '../App.css';
 import axios from 'axios';
 import { getConfig } from '../config';
@@ -40,8 +41,99 @@ const UserProfile = () => {
     const [permissions, setPermissions] = useState([]);
     const [isLoadingPermissions, setIsLoadingPermissions] = useState(true);
     const [mobileTooltipId, setMobileTooltipId] = useState(null);
+    const [profileImage, setProfileImage] = useState(null);
+    const [profileImageFile, setProfileImageFile] = useState(null);
+    const [profileImagePending, setProfileImagePending] = useState(false);
+    const [coverPhoto, setCoverPhoto] = useState(null);
+    const [coverPhotoFile, setCoverPhotoFile] = useState(null);
+    const [coverPhotoPending, setCoverPhotoPending] = useState(false);
 
+    const profileImageRef = useRef(null);
+    const profileImageFileRef = useRef(null);
+    const coverPhotoRef = useRef(null);
+    const coverPhotoFileRef = useRef(null);
+    const coverPhotoDivRef = useRef(null);
+    const [coverPhotoRect, setCoverPhotoRect] = useState(null);
     const fetchInitiated = useRef(false);
+
+    const handleProfileImageChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        profileImageFileRef.current = file;
+        setProfileImageFile(file);
+        setProfileImage(URL.createObjectURL(file));
+        setProfileImagePending(true);
+    };
+
+    const handleCoverPhotoChange = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        coverPhotoFileRef.current = file;
+        setCoverPhotoFile(file);
+        setCoverPhoto(URL.createObjectURL(file));
+        if (coverPhotoDivRef.current) {
+            setCoverPhotoRect(coverPhotoDivRef.current.getBoundingClientRect());
+        }
+        setCoverPhotoPending(true);
+    };
+
+    const handleSaveProfileImage = async () => {
+        const file = profileImageFileRef.current;
+        if (!file) return;
+        try {
+            const baseUrl = getConfig().baseUrl;
+            const token = localStorage.getItem('token');
+            const userId = user.userId;
+
+            const formData = new FormData();
+            formData.append('userId', userId);
+            formData.append('profile', file);
+
+            await axios.post(`${baseUrl}/user/change-profile-image`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            toast.success('Profile image updated successfully');
+            profileImageFileRef.current = null;
+            setProfileImageFile(null);
+            setProfileImagePending(false);
+        } catch (error) {
+            const errorMessage = error.response?.data?.data || 'Failed to update profile image';
+            toast.error(errorMessage);
+        }
+    };
+
+    const handleSaveCoverPhoto = async () => {
+        const file = coverPhotoFileRef.current;
+        if (!file) return;
+        try {
+            const baseUrl = getConfig().baseUrl;
+            const token = localStorage.getItem('token');
+            const userId = user.userId;
+
+            const formData = new FormData();
+            formData.append('userId', userId);
+            formData.append('profile', file);
+
+            await axios.post(`${baseUrl}/user/change-cover-image`, formData, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
+            });
+
+            toast.success('Cover image updated successfully');
+            coverPhotoFileRef.current = null;
+            setCoverPhotoFile(null);
+            setCoverPhotoPending(false);
+        } catch (error) {
+            const errorMessage = error.response?.data?.data || 'Failed to update cover image';
+            toast.error(errorMessage);
+        }
+    };
 
 
     const { hasPermissionAccess } = useUser();
@@ -85,7 +177,7 @@ const UserProfile = () => {
             if (response.data && response.data.data) {
                 const data = response.data.data;
                 setUser({
-                    userId: 0,
+                    userId: data.userId || data.id || 0,
                     fname: data.fname,
                     lname: data.lname,
                     email: data.email,
@@ -100,6 +192,8 @@ const UserProfile = () => {
                     avatarColor: "var(--primary-color)",
                     imageUrl: data.imageUrl
                 });
+                if (data.profileImageUrl) setProfileImage(data.profileImageUrl);
+                if (data.coverImageUrl) setCoverPhoto(data.coverImageUrl);
             }
         } catch (error) {
             if (error?.response?.data?.data) {
@@ -294,8 +388,6 @@ const UserProfile = () => {
                     roleId: userData.role && userData.role.id ? userData.role.id : (userData.roleId || ''),
                     serviceCenter: userData.serviceCenter && userData.serviceCenter.name ? userData.serviceCenter.name : (userData.serviceCenterName || "Head Office"),
                     serviceCenterId: userData.serviceCenter && userData.serviceCenter.id ? userData.serviceCenter.id : (userData.serviceCenterId || ''),
-                    password: '',
-                    confirmPassword: ''
                 });
             }
         } catch (error) {
@@ -349,11 +441,7 @@ const UserProfile = () => {
     const handleEditClick = () => {
         // Initialize with basic empty state or current view data while loading
         // Actual data will be fetched in useEffect
-        setEditFormData({
-            ...user,
-            password: '',
-            confirmPassword: ''
-        });
+        setEditFormData({ ...user });
         setIsEditing(true);
     };
 
@@ -379,11 +467,6 @@ const UserProfile = () => {
     const handleSave = async (e) => {
         e.preventDefault();
 
-        if (editFormData.password && editFormData.password !== editFormData.confirmPassword) {
-            toast.error("Passwords do not match");
-            return;
-        }
-
         try {
             const baseUrl = getConfig().baseUrl;
             const token = localStorage.getItem('token');
@@ -400,7 +483,6 @@ const UserProfile = () => {
                 userType: userTypeInt,
                 roleId: editFormData.roleId,
                 serviceCenterId: editFormData.serviceCenterId,
-                password: editFormData.password || undefined // Only send if set
             };
 
             await axios.post(`${baseUrl}/user/update-profile`, payload, {
@@ -450,8 +532,64 @@ const UserProfile = () => {
 
                 {/* Left Column: Identity Card */}
                 <div className="content-card" style={{ padding: '0', overflow: 'hidden', textAlign: 'center' }}>
-                    <div style={{ background: user.avatarColor, height: '120px', position: 'relative' }}>
-                        {/* Cover area */}
+                    {/* Cover photo portal buttons — rendered into document.body to avoid overflow:hidden interference */}
+                    {coverPhotoPending && coverPhotoRect && ReactDOM.createPortal(
+                        <>
+                            <button type="button"
+                                onClick={() => { coverPhotoFileRef.current = null; setCoverPhoto(null); setCoverPhotoFile(null); setCoverPhotoPending(false); }}
+                                style={{
+                                    position: 'fixed',
+                                    top: coverPhotoRect.top + 10,
+                                    right: window.innerWidth - coverPhotoRect.right + 48,
+                                    zIndex: 9999,
+                                    background: 'rgba(0,0,0,0.55)', border: 'none', borderRadius: '50%',
+                                    width: '32px', height: '32px', display: 'flex', alignItems: 'center',
+                                    justifyContent: 'center', color: 'white', cursor: 'pointer',
+                                }}>
+                                <X size={15} />
+                            </button>
+                            <button type="button"
+                                onClick={() => handleSaveCoverPhoto()}
+                                style={{
+                                    position: 'fixed',
+                                    top: coverPhotoRect.top + 10,
+                                    right: window.innerWidth - coverPhotoRect.right + 10,
+                                    zIndex: 9999,
+                                    background: '#22c55e', border: 'none', borderRadius: '50%',
+                                    width: '32px', height: '32px', display: 'flex', alignItems: 'center',
+                                    justifyContent: 'center', color: 'white', cursor: 'pointer',
+                                }}>
+                                <Check size={15} />
+                            </button>
+                        </>,
+                        document.body
+                    )}
+                    <div style={{ position: 'relative' }}>
+                        <div ref={coverPhotoDivRef} style={{
+                            backgroundColor: user.avatarColor,
+                            backgroundImage: coverPhoto ? `url(${coverPhoto})` : 'none',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center',
+                            backgroundRepeat: 'no-repeat',
+                            height: '120px',
+                        }} />
+                        {!coverPhotoPending && (
+                            <button type="button" onClick={() => coverPhotoRef.current?.click()} style={{
+                                position: 'absolute', top: '10px', right: '10px',
+                                background: 'rgba(0,0,0,0.55)', border: 'none', borderRadius: '50%',
+                                width: '32px', height: '32px', display: 'flex', alignItems: 'center',
+                                justifyContent: 'center', color: 'white', cursor: 'pointer', zIndex: 2,
+                            }}>
+                                <Edit2 size={15} />
+                            </button>
+                        )}
+                        <input
+                            type="file"
+                            accept="image/*"
+                            ref={coverPhotoRef}
+                            style={{ display: 'none' }}
+                            onChange={handleCoverPhotoChange}
+                        />
                     </div>
                     <div style={{ marginTop: '-60px', padding: '0 1.5rem 2rem' }}>
                         <div style={{
@@ -466,42 +604,72 @@ const UserProfile = () => {
                             alignItems: 'center',
                             position: 'relative'
                         }}>
-                            <div style={{
-                                width: '100%',
-                                height: '100%',
-                                borderRadius: '50%',
-                                background: user.avatarColor,
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                color: 'white',
-                                fontSize: '3rem',
-                                fontWeight: 'bold'
-                            }}>
-                                {isLoadingProfile ? (
-                                    <Skeleton variant="circular" width={112} height={112} sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
-                                ) : (
-                                    (user.fname && user.lname) ? `${user.fname[0]}${user.lname[0]}` : ''
-                                )}
-                            </div>
-                            {!isLoadingProfile && (
-                                <button style={{
-                                    position: 'absolute',
-                                    bottom: '0',
-                                    right: '0',
-                                    background: 'var(--info-color)',
-                                    border: 'none',
+                            {profileImage ? (
+                                <img src={profileImage} alt="Profile" style={{
+                                    width: '100%', height: '100%',
+                                    borderRadius: '50%', objectFit: 'cover'
+                                }} />
+                            ) : (
+                                <div style={{
+                                    width: '100%',
+                                    height: '100%',
                                     borderRadius: '50%',
-                                    width: '32px',
-                                    height: '32px',
+                                    background: user.avatarColor,
                                     display: 'flex',
-                                    alignItems: 'center',
                                     justifyContent: 'center',
+                                    alignItems: 'center',
                                     color: 'white',
-                                    cursor: 'pointer'
+                                    fontSize: '3rem',
+                                    fontWeight: 'bold'
                                 }}>
-                                    <Camera size={16} />
-                                </button>
+                                    {isLoadingProfile ? (
+                                        <Skeleton variant="circular" width={112} height={112} />
+                                    ) : (
+                                        (user.fname && user.lname) ? `${user.fname[0]}${user.lname[0]}` : ''
+                                    )}
+                                </div>
+                            )}
+                            {!isLoadingProfile && (
+                                <>
+                                    {profileImagePending ? (
+                                        <>
+                                            <button type="button" onClick={() => { setProfileImage(null); setProfileImageFile(null); setProfileImagePending(false); }} style={{
+                                                position: 'absolute', bottom: '0', left: '0',
+                                                background: 'rgba(0,0,0,0.45)', border: 'none', borderRadius: '50%',
+                                                width: '28px', height: '28px', display: 'flex', alignItems: 'center',
+                                                justifyContent: 'center', color: 'white', cursor: 'pointer',
+                                            }}>
+                                                <X size={13} />
+                                            </button>
+                                            <button type="button" onClick={() => handleSaveProfileImage()} style={{
+                                                position: 'absolute', bottom: '0', right: '0',
+                                                background: 'var(--success-color, #22c55e)',
+                                                border: 'none', borderRadius: '50%',
+                                                width: '28px', height: '28px', display: 'flex', alignItems: 'center',
+                                                justifyContent: 'center', color: 'white', cursor: 'pointer',
+                                            }}>
+                                                <Check size={13} />
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <button type="button" onClick={() => profileImageRef.current?.click()} style={{
+                                            position: 'absolute', bottom: '0', right: '0',
+                                            background: 'rgba(0,0,0,0.45)',
+                                            border: 'none', borderRadius: '50%',
+                                            width: '28px', height: '28px', display: 'flex', alignItems: 'center',
+                                            justifyContent: 'center', color: 'white', cursor: 'pointer',
+                                        }}>
+                                            <Edit2 size={13} />
+                                        </button>
+                                    )}
+                                    <input
+                                        type="file"
+                                        accept="image/*"
+                                        ref={profileImageRef}
+                                        style={{ display: 'none' }}
+                                        onChange={handleProfileImageChange}
+                                    />
+                                </>
                             )}
                         </div>
 
@@ -716,7 +884,7 @@ const UserProfile = () => {
                             {permissions.map((perm, idx) => {
                                 if (perm.permission === 'Permit This') return null;
                                 const trueAccesses = getTrueAccesses(perm);
-                                
+
                                 const tooltipContent = (
                                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', padding: '0.25rem' }}>
                                         {trueAccesses.length > 0 ? (
@@ -775,8 +943,8 @@ const UserProfile = () => {
                                                     setMobileTooltipId(prev => prev === perm.permission ? null : perm.permission);
                                                 }
                                             }}
-                                            style={{ 
-                                                border: '1px solid var(--border-color)', 
+                                            style={{
+                                                border: '1px solid var(--border-color)',
                                                 cursor: 'pointer',
                                                 borderRadius: '0.5rem',
                                                 padding: '0.5rem 1rem',
@@ -1106,29 +1274,6 @@ const UserProfile = () => {
                                         />
                                     </div>
 
-                                    {/* Password */}
-                                    <div className="input-group">
-                                        <Lock className="input-icon" size={18} />
-                                        <input
-                                            type="password"
-                                            name="password"
-                                            placeholder="New Password (Optional)"
-                                            value={editFormData.password}
-                                            onChange={handleInputChange}
-                                        />
-                                    </div>
-
-                                    {/* Confirm Password */}
-                                    <div className="input-group">
-                                        <Lock className="input-icon" size={18} />
-                                        <input
-                                            type="password"
-                                            name="confirmPassword"
-                                            placeholder="Confirm New Password"
-                                            value={editFormData.confirmPassword}
-                                            onChange={handleInputChange}
-                                        />
-                                    </div>
                                 </div>
                             </div>
                             <div className="modal-footer" style={{ marginBottom: '1.5rem', marginRight: '1.5rem', marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>

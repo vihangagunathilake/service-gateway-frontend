@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { X, User, Mail, Lock, Phone, Building2, Loader2, IdCard } from 'lucide-react';
+import { X, User, Mail, Phone, Building2, Loader2, IdCard } from 'lucide-react';
 import { getConfig } from '../config';
 import '../App.css';
 import { useNavigate } from 'react-router-dom';
@@ -16,8 +16,6 @@ const RegisterModal = ({ isOpen, onClose }) => {
         adminName: '',
         nic: '',
         adminEmail: '',
-        password: '',
-        confirmPassword: ''
     });
     const [isLoading, setIsLoading] = useState(false);
 
@@ -35,12 +33,6 @@ const RegisterModal = ({ isOpen, onClose }) => {
         e.preventDefault();
         setIsLoading(true);
 
-        if (formData.password !== formData.confirmPassword) {
-            toast.error('Passwords do not match!');
-            setIsLoading(false);
-            return;
-        }
-
         const adminNameParts = formData.adminName.trim().split(' ');
         const adminFName = adminNameParts[0];
         const adminLName = adminNameParts.length > 1 ? adminNameParts.slice(1).join(' ') : '';
@@ -54,7 +46,6 @@ const RegisterModal = ({ isOpen, onClose }) => {
             adminLName: adminLName,
             nic: formData.nic,
             adminEmail: formData.adminEmail,
-            adminPassword: formData.password
         };
 
         try {
@@ -72,8 +63,6 @@ const RegisterModal = ({ isOpen, onClose }) => {
                 adminName: '',
                 nic: '',
                 adminEmail: '',
-                password: '',
-                confirmPassword: ''
             });
             onClose();
         } catch (error) {
@@ -185,28 +174,6 @@ const RegisterModal = ({ isOpen, onClose }) => {
                                         name="nic"
                                         placeholder="Admin NIC"
                                         value={formData.nic}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-                                <div className="input-group">
-                                    <Lock className="input-icon" size={18} />
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        placeholder="Admin Password"
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        required
-                                    />
-                                </div>
-                                <div className="input-group">
-                                    <Lock className="input-icon" size={18} />
-                                    <input
-                                        type="password"
-                                        name="confirmPassword"
-                                        placeholder="Confirm Password"
-                                        value={formData.confirmPassword}
                                         onChange={handleChange}
                                         required
                                     />

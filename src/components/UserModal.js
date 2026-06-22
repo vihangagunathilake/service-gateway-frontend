@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, User, Mail, Phone, Shield, Lock, FileText, Briefcase, Loader2, MapPin } from 'lucide-react';
+import { X, User, Mail, Phone, Shield, FileText, Briefcase, Loader2, MapPin } from 'lucide-react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { getConfig } from '../config';
@@ -24,8 +24,6 @@ const UserModal = ({ isOpen, onClose, onSave, user }) => {
         userType: 'USER', // Default to USER
         roleId: '',
         serviceCenterId: '',
-        password: '',
-        confirmPassword: ''
     });
 
     // Reset form when modal opens
@@ -45,8 +43,6 @@ const UserModal = ({ isOpen, onClose, onSave, user }) => {
                     userType: 'USER',
                     roleId: '',
                     serviceCenterId: '',
-                    password: '',
-                    confirmPassword: ''
                 });
             }
             fetchRoles();
@@ -76,8 +72,6 @@ const UserModal = ({ isOpen, onClose, onSave, user }) => {
                     userType: userData.userType === 0 ? 'USER' : userData.userType === 1 ? 'ADMIN' : 'EMPLOYEE',
                     roleId: userData.role && userData.role.id ? userData.role.id : (userData.roleId || ''),
                     serviceCenterId: userData.serviceCenter && userData.serviceCenter.id ? userData.serviceCenter.id : (userData.serviceCenterId || ''),
-                    password: '',
-                    confirmPassword: ''
                 });
             }
         } catch (error) {
@@ -159,17 +153,6 @@ const UserModal = ({ isOpen, onClose, onSave, user }) => {
         if (!formData.lastName.trim()) return toast.error('Last Name is required');
         if (!formData.email.trim()) return toast.error('Email is required');
 
-        // Passwords only required in Add mode
-        if (!user) {
-            if (!formData.password) return toast.error('Password is required');
-            if (formData.password !== formData.confirmPassword) return toast.error('Passwords do not match');
-        } else {
-            // In edit mode, if password field is touched, they must match
-            if (formData.password && formData.password !== formData.confirmPassword) {
-                return toast.error('Passwords do not match');
-            }
-        }
-
         if (!formData.roleId) return toast.error('Please select a role');
 
         setIsSaving(true);
@@ -192,7 +175,6 @@ const UserModal = ({ isOpen, onClose, onSave, user }) => {
                     userType: formData.userType,
                     roleId: parseInt(formData.roleId),
                     serviceCenterId: formData.serviceCenterId ? parseInt(formData.serviceCenterId) : null,
-                    password: formData.password || null
                 };
 
 
@@ -214,7 +196,6 @@ const UserModal = ({ isOpen, onClose, onSave, user }) => {
                     userType: formData.userType,
                     roleId: formData.roleId,
                     serviceCenterId: formData.serviceCenterId || null,
-                    password: formData.password
                 };
 
                 response = await axios.post(`${baseUrl}/user/add`, payload, {
@@ -387,31 +368,6 @@ const UserModal = ({ isOpen, onClose, onSave, user }) => {
                                     )}
                                 </div>
 
-                                {/* Password */}
-                                <div className="input-group">
-                                    <Lock className="input-icon" size={18} />
-                                    <input
-                                        type="password"
-                                        name="password"
-                                        placeholder={user ? "New Password (Optional)" : "Password"}
-                                        value={formData.password}
-                                        onChange={handleChange}
-                                        required={!user}
-                                    />
-                                </div>
-
-                                {/* Confirm Password */}
-                                <div className="input-group">
-                                    <Lock className="input-icon" size={18} />
-                                    <input
-                                        type="password"
-                                        name="confirmPassword"
-                                        placeholder={user ? "Confirm New Password" : "Confirm Password"}
-                                        value={formData.confirmPassword}
-                                        onChange={handleChange}
-                                        required={!user || formData.password.length > 0}
-                                    />
-                                </div>
                             </div>
 
                             <div className="modal-footer" style={{ marginTop: '1.5rem', display: 'flex', justifyContent: 'flex-end', gap: '1rem' }}>

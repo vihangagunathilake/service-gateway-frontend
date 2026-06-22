@@ -633,12 +633,12 @@ body {
 .notification-dropdown-footer {
   padding: 0.75rem;
   text-align: center;
-  border-top: 1px solid var(--text-secondary);
+  /* border-top: 1px solid var(--text-secondary); */
 }
 
 .notification-dropdown-footer span {
   font-size: 0.85rem;
-  color: var(--info-color);
+  color: var(--text-secondary);
   cursor: pointer;
 }
 

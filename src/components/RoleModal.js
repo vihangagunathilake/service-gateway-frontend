@@ -322,17 +322,17 @@ const RoleModal = ({ isOpen, onClose, role, onSave }) => {
                         <div style={{
                             maxHeight: '300px',
                             overflowY: 'auto',
-                            border: '1px solid rgba(255,255,255,0.1)',
+                            border: '1px solid var(--border-color)',
                             borderRadius: '0.5rem',
                             padding: '1rem',
-                            background: 'rgba(255,255,255,0.02)'
+                            background: 'var(--hover-bg)'
                         }}>
                             {isLoadingPermissions ? (
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.8rem' }}>
                                     {Array.from(new Array(8)).map((_, i) => (
                                         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem' }}>
-                                            <Skeleton variant="rounded" width={16} height={16} sx={{ borderRadius: '3px', bgcolor: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
-                                            <Skeleton variant="text" width={i % 3 === 0 ? 160 : i % 2 === 0 ? 120 : 140} sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
+                                            <Skeleton variant="rounded" width={16} height={16} sx={{ borderRadius: '3px', flexShrink: 0 }} />
+                                            <Skeleton variant="text" width={i % 3 === 0 ? 160 : i % 2 === 0 ? 120 : 140} />
                                         </div>
                                     ))}
                                 </div>
@@ -347,7 +347,7 @@ const RoleModal = ({ isOpen, onClose, role, onSave }) => {
                                                 alignItems: 'center',
                                                 gap: '0.6rem',
                                                 cursor: 'pointer',
-                                                color: isSelected ? '#fff' : '#cbd5e1',
+                                                color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)',
                                                 padding: '0.4rem',
                                                 borderRadius: '0.25rem',
                                                 transition: 'background 0.2s',
@@ -366,7 +366,7 @@ const RoleModal = ({ isOpen, onClose, role, onSave }) => {
                                     })}
                                 </div>
                             ) : (
-                                <div className="no-options" style={{ color: '#94a3b8', textAlign: 'center' }}>No permissions found</div>
+                                <div className="no-options" style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>No permissions found</div>
                             )}
                         </div>
                     </div>
@@ -386,17 +386,17 @@ const RoleModal = ({ isOpen, onClose, role, onSave }) => {
                         <div style={{
                             maxHeight: '300px',
                             overflowY: 'auto',
-                            border: '1px solid rgba(255,255,255,0.1)',
+                            border: '1px solid var(--border-color)',
                             borderRadius: '0.5rem',
                             padding: '1rem',
-                            background: 'rgba(255,255,255,0.02)'
+                            background: 'var(--hover-bg)'
                         }}>
                             {isLoadingNotifications ? (
                                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '0.8rem' }}>
                                     {Array.from(new Array(4)).map((_, i) => (
                                         <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.4rem' }}>
-                                            <Skeleton variant="rounded" width={16} height={16} sx={{ borderRadius: '3px', bgcolor: 'rgba(255,255,255,0.1)', flexShrink: 0 }} />
-                                            <Skeleton variant="text" width={i % 2 === 0 ? 120 : 160} sx={{ bgcolor: 'rgba(255,255,255,0.1)' }} />
+                                            <Skeleton variant="rounded" width={16} height={16} sx={{ borderRadius: '3px', flexShrink: 0 }} />
+                                            <Skeleton variant="text" width={i % 2 === 0 ? 120 : 160} />
                                         </div>
                                     ))}
                                 </div>
@@ -413,7 +413,7 @@ const RoleModal = ({ isOpen, onClose, role, onSave }) => {
                                                 alignItems: 'center',
                                                 gap: '0.6rem',
                                                 cursor: 'pointer',
-                                                color: isSelected ? '#fff' : '#cbd5e1',
+                                                color: isSelected ? 'var(--text-primary)' : 'var(--text-secondary)',
                                                 padding: '0.4rem',
                                                 borderRadius: '0.25rem',
                                                 transition: 'background 0.2s',
@@ -431,7 +431,7 @@ const RoleModal = ({ isOpen, onClose, role, onSave }) => {
                                     })}
                                 </div>
                             ) : (
-                                <div className="no-options" style={{ color: '#94a3b8', textAlign: 'center' }}>No notifications found</div>
+                                <div className="no-options" style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>No notifications found</div>
                             )}
                         </div>
                     </div>

@@ -567,8 +567,11 @@ const Users = () => {
                                     <tr key={user.id || index}>
                                         <td>
                                             <div className="user-cell" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                                <div className="avatar-placeholder" style={{ width: '32px', height: '32px', flexShrink: 0, borderRadius: '50%', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                    <User size={16} className="text-secondary" />
+                                                <div className="avatar-placeholder" style={{ width: '32px', height: '32px', flexShrink: 0, borderRadius: '50%', background: '#eee', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                                                    {user.profileImage
+                                                        ? <img src={user.profileImage} alt="profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                                        : <User size={16} className="text-secondary" />
+                                                    }
                                                 </div>
                                                 <span className="font-medium">{user.name || `${user.firstName || ''} ${user.lastName || ''}`}</span>
                                             </div>
