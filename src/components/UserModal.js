@@ -69,7 +69,7 @@ const UserModal = ({ isOpen, onClose, onSave, user }) => {
                     email: userData.email || '',
                     contact: userData.contact || userData.mobile || '',
                     nic: userData.nic || '',
-                    userType: userData.userType === 0 ? 'USER' : userData.userType === 1 ? 'ADMIN' : 'EMPLOYEE',
+                    userType: userData.userType === 0 ? 'USER' : userData.userType === 2 ? 'EMPLOYEE' : 'USER',
                     roleId: userData.role && userData.role.id ? userData.role.id : (userData.roleId || ''),
                     serviceCenterId: userData.serviceCenter && userData.serviceCenter.id ? userData.serviceCenter.id : (userData.serviceCenterId || ''),
                 });
@@ -153,7 +153,7 @@ const UserModal = ({ isOpen, onClose, onSave, user }) => {
         if (!formData.lastName.trim()) return toast.error('Last Name is required');
         if (!formData.email.trim()) return toast.error('Email is required');
 
-        if (!formData.roleId) return toast.error('Please select a role');
+        if (!user && formData.userType !== 'EMPLOYEE' && !formData.roleId) return toast.error('Please select a role');
 
         setIsSaving(true);
 
@@ -193,8 +193,8 @@ const UserModal = ({ isOpen, onClose, onSave, user }) => {
                     email: formData.email,
                     contact: formData.contact,
                     nic: formData.nic,
-                    userType: formData.userType,
-                    roleId: formData.roleId,
+                    userType: formData.userType === 'USER' ? 0 : 2,
+                    roleId: formData.roleId ? parseInt(formData.roleId) : null,
                     serviceCenterId: formData.serviceCenterId || null,
                 };
 
@@ -327,26 +327,29 @@ const UserModal = ({ isOpen, onClose, onSave, user }) => {
                                     </select>
                                 </div>
 
-                                {/* Role */}
-                                <div className="input-group">
-                                    <Shield className="input-icon" size={18} />
-                                    {isLoadingRoles ? (
-                                        <div className="loading-text" style={{ padding: '0.8rem', color: '#999' }}>Loading roles...</div>
-                                    ) : (
-                                        <select
-                                            name="roleId"
-                                            value={formData.roleId}
-                                            onChange={handleChange}
-                                            className="modal-select"
-                                            required
-                                        >
-                                            <option value="">Select Role</option>
-                                            {roles.map(role => (
-                                                <option key={role.id} value={role.id}>{role.name}</option>
-                                            ))}
-                                        </select>
-                                    )}
-                                </div>
+                                {/* Role — hidden for Employee */}
+                                {formData.userType !== 'EMPLOYEE' && (
+                                    <div className="input-group">
+                                        <Shield className="input-icon" size={18} />
+                                        {isLoadingRoles ? (
+                                            <div className="loading-text" style={{ padding: '0.8rem', color: '#999' }}>Loading roles...</div>
+                                        ) : (
+                                            <select
+                                                name="roleId"
+                                                value={formData.roleId}
+                                                onChange={handleChange}
+                                                className="modal-select"
+                                                required
+                                                style={!user && !formData.roleId ? { border: '1px solid #ef4444' } : {}}
+                                            >
+                                                <option value="">Select Role</option>
+                                                {roles.map(role => (
+                                                    <option key={role.id} value={role.id}>{role.name}</option>
+                                                ))}
+                                            </select>
+                                        )}
+                                    </div>
+                                )}
 
                                 {/* Service Center */}
                                 <div className="input-group">

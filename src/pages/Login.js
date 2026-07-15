@@ -2,11 +2,24 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { User, Lock, ArrowRight, Loader2, Mail, ArrowLeft } from 'lucide-react';
+import { User, Lock, ArrowRight, Loader2, Mail, ArrowLeft, MapPin } from 'lucide-react';
 import RegisterModal from '../components/RegisterModal';
 import { getConfig } from '../config';
 import { useTheme } from '../context/ThemeContext';
 import '../App.css'; // We'll add specific styles in App.css
+
+const parseJwt = (token) => {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        return null;
+    }
+};
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -23,6 +36,12 @@ const Login = () => {
     const [newPassword, setNewPassword] = useState('');
     const [repeatPassword, setRepeatPassword] = useState('');
     const [isChangingPassword, setIsChangingPassword] = useState(false);
+    const [showServicePointSelect, setShowServicePointSelect] = useState(false);
+    const [servicePoints, setServicePoints] = useState([]);
+    const [selectedServicePointId, setSelectedServicePointId] = useState('');
+    const [isLoadingServicePoints, setIsLoadingServicePoints] = useState(false);
+    const [isConfirmingPoint, setIsConfirmingPoint] = useState(false);
+    const [pendingSession, setPendingSession] = useState(null); // holds login data until service point confirmed
     const navigate = useNavigate();
     const { theme } = useTheme();
 
@@ -43,28 +62,60 @@ const Login = () => {
             });
 
             if (response.data && response.data.data) {
-                const { token, refreshToken, name, email, userType, password: passwordValid, forgot:  forgot} = response.data.data;
+                const { token, refreshToken, name, email, userType, serviceCenter, password: passwordValid, forgot, userId, id } = response.data.data;
 
                 if (passwordValid === false) {
                     localStorage.setItem('tempToken', token);
-                    setChangeEmail(username); // username field is the email
-                    setChangeToken(password); // login password = emailString (temporary token)
+                    setChangeEmail(username);
+                    setChangeToken(password);
                     setChangeForgot(forgot || false);
                     setShowChangePassword(true);
                     return;
                 }
 
-                localStorage.setItem('isAuthenticated', 'true');
-                localStorage.setItem('token', token);
-                localStorage.setItem('refreshToken', refreshToken);
+                // If userType is 2, user must select a service point first, then redirect to /my-jobs
+                if (Number(userType) === 2) {
+                    const decoded = parseJwt(token);
+                    const finalUserId = userId || id || response.data.data?.userId || response.data.data?.id || decoded?.user || decoded?.userId || decoded?.id || decoded?.sub || '';
+                    setPendingSession({ token, refreshToken, name, email, userType, userId: finalUserId });
+                    setIsLoadingServicePoints(true);
+                    setShowServicePointSelect(true);
 
-                // Store user information for profile display
-                if (name) localStorage.setItem('userName', name);
-                if (email) localStorage.setItem('userEmail', email);
-                if (userType) localStorage.setItem('userType', userType);
+                    const targetCenter = serviceCenter || 2;
+                    try {
+                        const pts = await axios.get(`${getConfig().baseUrl}/service-points/service-center/${targetCenter}/dropdown`, {
+                            headers: { 'Authorization': `Bearer ${token}` }
+                        });
+                        setServicePoints(pts.data?.data || []);
+                    } catch (error) {
+                        if (error?.response?.data?.data) {
+                            if (error?.response?.data?.code === 1) {
+                                toast.info("Session expired. Please login again.");
+                                navigate('/login');
+                            } else {
+                                toast.error(error?.response?.data?.data);
+                            }
+                        } else {
+                            toast.error('Network error');
+                        }
+                    } finally {
+                        setIsLoadingServicePoints(false);
+                    }
+                    return;
+                } else {
+                    // For any other userType, redirect directly to /dashboard
+                    localStorage.setItem('isAuthenticated', 'true');
+                    localStorage.setItem('token', token);
+                    localStorage.setItem('refreshToken', refreshToken);
+                    if (name) localStorage.setItem('userName', name);
+                    if (email) localStorage.setItem('userEmail', email);
+                    localStorage.setItem('userType', String(userType));
+
+                    navigate('/dashboard');
+                    return;
+                }
             }
 
-            // toast.success('Login Successful');
             navigate('/dashboard');
         } catch (error) {
             const errorMessage = error.response?.data?.data || 'Network Error';
@@ -102,8 +153,16 @@ const Login = () => {
             setNewPassword('');
             setRepeatPassword('');
         } catch (error) {
-            const errorMessage = error.response?.data?.data || 'Failed to reset password';
-            toast.error(errorMessage);
+            if (error?.response?.data?.data) {
+                if (error?.response?.data?.code === 1) {
+                    toast.info("Session expired. Please login again.");
+                    navigate('/login');
+                } else {
+                    toast.error(error?.response?.data?.data);
+                }
+            } else {
+                toast.error('Network error');
+            }
         } finally {
             setIsChangingPassword(false);
         }
@@ -120,16 +179,102 @@ const Login = () => {
             setShowForgotPassword(false);
             setForgotEmail('');
         } catch (error) {
-            const errorMessage = error.response?.data?.data || 'Failed to send token';
-            toast.error(errorMessage);
+            if (error?.response?.data?.data) {
+                if (error?.response?.data?.code === 1) {
+                    toast.info("Session expired. Please login again.");
+                    navigate('/login');
+                } else {
+                    toast.error(error?.response?.data?.data);
+                }
+            } else {
+                toast.error('Network error');
+            }
         } finally {
             setIsSendingToken(false);
         }
     };
 
+    const handleConfirmServicePoint = async (point) => {
+        if (!pendingSession) return;
+        setIsConfirmingPoint(true);
+        setSelectedServicePointId(String(point.id));
+        const { token, refreshToken, name, email, userType, userId } = pendingSession;
+
+        try {
+            const baseUrl = getConfig().baseUrl;
+            await axios.get(`${baseUrl}/agent/login/user/${userId}/to-point/${point.id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            localStorage.setItem('isAuthenticated', 'true');
+            localStorage.setItem('token', token);
+            localStorage.setItem('refreshToken', refreshToken);
+            if (name) localStorage.setItem('userName', name);
+            if (email) localStorage.setItem('userEmail', email);
+            if (userType !== undefined) localStorage.setItem('userType', userType);
+            localStorage.setItem('servicePointId', String(point.id));
+            localStorage.setItem('servicePointName', point.name);
+
+            if (Number(userType) === 2) {
+                navigate('/my-jobs');
+            } else {
+                navigate('/dashboard');
+            }
+        } catch (error) {
+            if (error?.response?.data?.data) {
+                if (error?.response?.data?.code === 1) {
+                    toast.info("Session expired. Please login again.");
+                    navigate('/login');
+                } else {
+                    toast.error(error?.response?.data?.data);
+                }
+            } else {
+                toast.error('Network error');
+            }
+        } finally {
+            setIsConfirmingPoint(false);
+        }
+    };
+
     return (
         <div className="login-container">
-            {showChangePassword ? (
+            {showServicePointSelect ? (
+                <div className="login-card">
+                    <div className="login-header">
+                        <img src={logoSrc} alt="Service Gateway Logo" className="login-logo" />
+                        <p>Select your service point to continue</p>
+                    </div>
+                    <div className="login-form">
+                        {isLoadingServicePoints ? (
+                            <div style={{ padding: '0.8rem', color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                                <Loader2 className="animate-spin" size={16} /> Loading service points...
+                            </div>
+                        ) : (
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxHeight: '320px', overflowY: 'auto', paddingRight: '2px' }}>
+                                {servicePoints.map(p => (
+                                    <button
+                                        key={p.id}
+                                        type="button"
+                                        className="login-btn"
+                                        disabled={isConfirmingPoint}
+                                        onClick={() => handleConfirmServicePoint(p)}
+                                        style={{ justifyContent: 'space-between', flexShrink: 0 }}
+                                    >
+                                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <MapPin size={18} />
+                                            {p.name}
+                                        </span>
+                                        {isConfirmingPoint && String(selectedServicePointId) === String(p.id)
+                                            ? <Loader2 className="animate-spin" size={18} />
+                                            : <ArrowRight size={18} />
+                                        }
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            ) : showChangePassword ? (
                 <div className="login-card">
                     <div className="login-header">
                         <img src={logoSrc} alt="Service Gateway Logo" className="login-logo" />

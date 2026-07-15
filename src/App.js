@@ -17,9 +17,22 @@ import Calendar from './pages/Calendar';
 import Jobs from './pages/Jobs';
 import JobDetail from './pages/JobDetail';
 import BranchDashboard from './pages/BranchDashboard';
+import NewDashboard from './pages/NewDashboard';
+import TodayJobs from './pages/TodayJobs';
+import MyJobs from './pages/MyJobs';
+import Records from './pages/Records';
+import Attendance from './pages/Attendance';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ThemeProvider } from './context/ThemeContext';
 import './App.css';
+
+const DashboardRedirect = () => {
+    const userType = localStorage.getItem('userType');
+    if (String(userType) === '2') {
+        return <Navigate to="/my-jobs" replace />;
+    }
+    return <Dashboard />;
+};
 
 function App() {
   return (
@@ -35,8 +48,13 @@ function App() {
             </ProtectedRoute>
           }>
             <Route index element={<Navigate to="/login" replace />} />
-            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="dashboard" element={<DashboardRedirect />} />
+            <Route path="my-jobs" element={<MyJobs />} />
+            <Route path="records" element={<Records />} />
+            <Route path="attendance" element={<Attendance />} />
+            <Route path="today-jobs" element={<TodayJobs />} />
             <Route path="branch-dashboard" element={<BranchDashboard />} />
+            <Route path="new-dashboard" element={<NewDashboard />} />
             <Route path="jobs" element={<Jobs />} />
             <Route path="jobs/:id" element={<JobDetail />} />
             <Route path="user-profile" element={<UserProfile />} />

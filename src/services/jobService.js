@@ -112,7 +112,7 @@ export const getJobDetails = async (jobId) => {
             throw new Error('No authentication token found');
         }
 
-        const response = await axios.get(`${baseUrl}/jobs/${jobId}/details`, {
+        const response = await axios.get(`${baseUrl}/user/job/${jobId}/details`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
@@ -195,3 +195,162 @@ export const getJobList = async (serviceCenter, date) => {
     }
 };
 
+/**
+ * Mark customer as arrived for a job
+ * @param {string|number} jobId
+ * @returns {Promise<Object>}
+ */
+export const allowToServeJob = async (jobId) => {
+    try {
+        const baseUrl = getConfig().baseUrl;
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
+
+        const response = await axios.get(`${baseUrl}/jobs/${jobId}/allow-to-serve`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (response.data && response.data.code === 0) {
+            return response.data.data;
+        } else {
+            throw new Error(response.data.message || 'Failed to allow to serve');
+        }
+    } catch (error) {
+        console.error('Failed to allow to serve:', error);
+        throw error;
+    }
+};
+
+/**
+ * Start serving a job
+ * @param {number} servicePointId
+ * @param {number} jobId
+ * @param {number} agentId
+ * @returns {Promise<Object>}
+ */
+export const startServingJob = async (servicePointId, jobId) => {
+    try {
+        const baseUrl = getConfig().baseUrl;
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
+
+        const response = await axios.post(`${baseUrl}/agent/serving`, {
+            servicePointId,
+            jobId
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (response.data && response.data.code === 0) {
+            return response.data.data;
+        } else {
+            throw new Error(response.data.message || 'Failed to start serving');
+        }
+    } catch (error) {
+        console.error('Failed to start serving job:', error);
+        throw error;
+    }
+};
+
+/**
+ * Get agent job records for a specific date
+ * @param {string} date - Date in YYYY-MM-DD format
+ * @returns {Promise<Array>}
+ */
+export const getAgentRecordsByDate = async (date) => {
+    try {
+        const baseUrl = getConfig().baseUrl;
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
+
+        const response = await axios.get(`${baseUrl}/agent/records/date/${date}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (response.data && response.data.code === 0) {
+            return response.data.data;
+        } else {
+            throw new Error(response.data.message || 'Failed to fetch records');
+        }
+    } catch (error) {
+        console.error('Failed to fetch agent records:', error);
+        throw error;
+    }
+};
+
+/**
+ * Get jobs assigned to the agent for a specific service point
+ * @param {string|number} pointId - The service point ID
+ * @returns {Promise<Array>} List of AgentJobs
+ */
+export const getAgentPointJobs = async (pointId) => {
+    try {
+        const baseUrl = getConfig().baseUrl;
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
+
+        const response = await axios.get(`${baseUrl}/agent/points/${pointId}/jobs`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (response.data && response.data.code === 0) {
+            return response.data.data;
+        } else {
+            throw new Error(response.data.message || 'Failed to fetch agent jobs');
+        }
+    } catch (error) {
+        console.error('Failed to fetch agent jobs:', error);
+        throw error;
+    }
+};
+
+/**
+ * Get job summary info (completed, pending, completedRate) for a service point
+ * @param {string|number} pointId - The service point ID
+ * @returns {Promise<{completed: number, pending: number, completedRate: number}>}
+ */
+export const getAgentPointJobsInfo = async (pointId) => {
+    try {
+        const baseUrl = getConfig().baseUrl;
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            throw new Error('No authentication token found');
+        }
+
+        const response = await axios.get(`${baseUrl}/agent/point/${pointId}/jobs-info`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (response.data && response.data.code === 0) {
+            return response.data.data;
+        } else {
+            throw new Error(response.data.message || 'Failed to fetch jobs info');
+        }
+    } catch (error) {
+        console.error('Failed to fetch jobs info:', error);
+        throw error;
+    }
+};

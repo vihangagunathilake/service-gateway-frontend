@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Search, ClipboardList, Clock, CheckCircle2, AlertCircle, Eye, MoreVertical, Plus, Building, Calendar, RefreshCw, List, LayoutGrid, GitCommit } from 'lucide-react';
 import { getServiceCenterDropdown, getServicePointsByCenterId } from '../services/serviceProviderService';
-import { getJobSchedule, getJobList } from '../services/jobService';
+import { getJobSchedule, getJobList, allowToServeJob } from '../services/jobService';
 import CreateJobModal from '../components/CreateJobModal';
 import '../App.css';
 import { toast } from 'react-toastify';
@@ -120,10 +120,12 @@ const Jobs = () => {
 
     const getStatusLabel = (statusInt) => {
         switch (statusInt) {
+            case -1: return 'In Progress';
             case 0: return 'Pending';
             case 1: return 'In Progress';
             case 2: return 'Completed';
             case 3: return 'Cancelled';
+            case 5: return 'Timeout';
             default: return `Status ${statusInt}`;
         }
     };
@@ -191,6 +193,15 @@ const Jobs = () => {
     const handleJobCreated = (newJob) => {
         fetchJobSchedule();
         fetchJobList();
+    };
+
+    const handleAllowToServe = async (jobId) => {
+        try {
+            await allowToServeJob(jobId);
+            fetchJobList();
+        } catch (error) {
+            toast.error(error?.response?.data?.data || 'Failed to mark customer as arrived');
+        }
     };
 
     const handleHighlight = (e, jobId) => {
@@ -453,7 +464,7 @@ const Jobs = () => {
                                                         }
                                                     }}
                                                 >
-                                                    <span className="commit-badge-count">
+                                                    <span className={`${job.status === 5 ? 'commit-badge-count-disabled' : 'commit-badge-count'}`}>
                                                         {(job.service)}
                                                     </span>
                                                 </Tooltip>
@@ -478,9 +489,32 @@ const Jobs = () => {
                                         </div>
                                     </div>
                                     <div className="commit-actions">
-                                        <span className={`status-badge-pill ${getStatusLabel(job.status).toLowerCase()} mobile-hidden`} style={{ color: getStatusLabel(job.status).toLowerCase() === 'in progress' ? '#3b82f6' : undefined }}>
-                                            {getStatusLabel(job.status)}
-                                        </span>
+                                        {job.status === -1 ? (
+                                            <span className="status-badge-pill serving mobile-hidden" style={{ color: '#3b82f6' }}>
+                                                {job.completedPercentage !== undefined && job.completedPercentage !== null
+                                                    ? `${job.completedPercentage}%`
+                                                    : 'In Progress'}
+                                            </span>
+                                        ) : (
+                                            <span className={`status-badge-pill ${getStatusLabel(job.status).toLowerCase()} mobile-hidden`} style={{ color: getStatusLabel(job.status).toLowerCase() === 'in progress' ? '#3b82f6' : undefined }}>
+                                                {getStatusLabel(job.status)}
+                                            </span>
+                                        )}
+                                        {selectedDate === new Date().toISOString().split('T')[0] && job.allowToServe === false && (
+                                            <button
+                                                className="commit-sha-btn"
+                                                onClick={() => job.status !== 5 && handleAllowToServe(job.jobId)}
+                                                disabled={job.status === 5}
+                                                style={job.status === 5 ? { opacity: 0.4, cursor: 'not-allowed' } : {}}
+                                            >
+                                                <span>Customer Arrived</span>
+                                            </button>
+                                        )}
+                                        {selectedDate === new Date().toISOString().split('T')[0] && job.allowToServe === true && (
+                                            <span style={{ fontSize: '0.75rem', color: 'var(--success-color, #10b981)', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                                                Customer Arrived
+                                            </span>
+                                        )}
                                         <button
                                             className="commit-sha-btn"
                                             onClick={() => navigate(`/jobs/${job.jobId}`, {

@@ -48,6 +48,7 @@ const subStatusLabel = (status) => {
 /** Format a LocalTime string (HH:mm:ss or HH:mm) to HH:mm display. */
 const formatTime = (t) => {
     if (!t) return '-';
+    if (String(t).includes('AM') || String(t).includes('PM')) return t;
     return t.substring(0, 5); // "HH:mm"
 };
 
@@ -287,6 +288,15 @@ const JobDetail = () => {
                                 <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: '500', textTransform: 'uppercase' }}>Service Time</label>
                                 <p style={{ fontWeight: '600' }}>{job.serviceTime || '-'}</p>
                             </div>
+                            {job.customerArrivedTime && (
+                                <div className="info-group">
+                                    <label style={{ display: 'block', fontSize: '0.75rem', color: 'var(--text-secondary)', marginBottom: '4px', fontWeight: '500', textTransform: 'uppercase' }}>Customer Arrived</label>
+                                    <p style={{ fontWeight: '600', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                        <CheckCircle2 size={14} style={{ color: 'var(--primary-color)' }} />
+                                        {job.customerArrivedTime}
+                                    </p>
+                                </div>
+                            )}
                         </div>
                         {job.description && (
                             <div style={{ marginTop: '1.5rem', padding: '1rem', background: 'var(--hover-bg)', borderRadius: '8px' }}>
@@ -319,15 +329,9 @@ const JobDetail = () => {
                                 {timeline.map((step, index) => {
                                     const isLast = index === timeline.length - 1;
 
-                                    // actualEndTime = real end; endTime = estimated; use whichever is available
-                                    const endDisplay = step.actualEndTime
-                                        ? formatTime(step.actualEndTime)
-                                        : step.endTime
-                                            ? `${formatTime(step.endTime)}${step.estimatedEndTime ? ' (est.)' : ''}`
-                                            : null;
-
+                                    // startTime / endTime are the scheduled (estimated) times
                                     const timeRange = step.startTime
-                                        ? `${formatTime(step.startTime)}${endDisplay ? ` – ${endDisplay}` : ''}`
+                                        ? `${formatTime(step.startTime)}${step.endTime ? ` – ${formatTime(step.endTime)}` : ''}`
                                         : '-';
 
                                     return (
@@ -366,7 +370,7 @@ const JobDetail = () => {
                                                     }}>
                                                         {step.service}
                                                         {step.pointName && (
-                                                            <span className="commit-badge-count" style={{ marginLeft: '8px', verticalAlign: 'middle', fontSize: '0.7rem' }}>
+                                                            <span className={job.status === 'Timeout' ? 'commit-badge-count-disabled' : 'commit-badge-count'} style={{ marginLeft: '8px', verticalAlign: 'middle', fontSize: '0.7rem' }}>
                                                                 {step.pointName}
                                                             </span>
                                                         )}
@@ -411,10 +415,32 @@ const JobDetail = () => {
                                                     ) : (
                                                         subStatusLabel(step.status)
                                                     )}
-                                                    {step.estimatedEndTime && !step.completed && (
-                                                        <span style={{ marginLeft: '2px', fontSize: '0.75rem', fontStyle: 'italic' }}>· end time estimated</span>
+                                                    {step.estimatedEndTime && (
+                                                        <span style={{ marginLeft: '2px', fontSize: '0.75rem', fontStyle: 'italic', color: 'var(--text-secondary)' }}>· end time estimated</span>
                                                     )}
                                                 </Typography>
+                                                {(step.actualStartTime || step.actualEndTime || step.agent) && (
+                                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', mt: 0.75 }}>
+                                                        {step.actualStartTime && (
+                                                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.73rem', color: 'var(--text-secondary)', background: 'var(--hover-bg)', padding: '2px 8px', borderRadius: '4px' }}>
+                                                                <Clock size={11} />
+                                                                Started {step.actualStartTime}
+                                                            </span>
+                                                        )}
+                                                        {step.actualEndTime && (
+                                                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.73rem', color: 'var(--text-secondary)', background: 'var(--hover-bg)', padding: '2px 8px', borderRadius: '4px' }}>
+                                                                <Clock size={11} />
+                                                                Ended {step.actualEndTime}
+                                                            </span>
+                                                        )}
+                                                        {step.agent && (
+                                                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '0.73rem', color: 'var(--text-secondary)', background: 'var(--hover-bg)', padding: '2px 8px', borderRadius: '4px' }}>
+                                                                <User size={11} />
+                                                                {step.agent}
+                                                            </span>
+                                                        )}
+                                                    </Box>
+                                                )}
                                             </TimelineContent>
                                         </TimelineItem>
                                     );
@@ -445,8 +471,8 @@ const JobDetail = () => {
                     </div>
 
                     {/* Financial Summary */}
-                    <div className="content-card" style={{ padding: '1.5rem', background: 'var(--primary-color)', color: 'white' }}>
-                        <h4 style={{ marginBottom: '1.2rem', color: 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div className="content-card" style={{ padding: '1.5rem', background: job.status === 'Timeout' ? 'rgba(31, 136, 61, 0.1)' : 'var(--primary-color)', color: job.status === 'Timeout' ? 'var(--text-primary)' : 'white' }}>
+                        <h4 style={{ marginBottom: '1.2rem', color: job.status === 'Timeout' ? 'var(--text-secondary)' : 'rgba(255,255,255,0.9)', display: 'flex', alignItems: 'center', gap: '8px' }}>
                             {/* <DollarSign size={18} /> */}
                             Payment Status
                         </h4>
@@ -466,7 +492,7 @@ const JobDetail = () => {
                             <div style={{
                                 marginTop: '0.5rem',
                                 paddingTop: '0.8rem',
-                                borderTop: '1px solid rgba(255,255,255,0.2)',
+                                borderTop: job.status === 'Timeout' ? '1px solid var(--border-color)' : '1px solid rgba(255,255,255,0.2)',
                                 display: 'flex',
                                 justifyContent: 'space-between',
                                 fontWeight: '700',

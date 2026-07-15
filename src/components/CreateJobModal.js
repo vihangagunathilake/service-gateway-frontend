@@ -183,11 +183,9 @@ const CreateJobModal = ({ isOpen, onClose, onJobCreated, allowPaymentVerify }) =
             };
 
             const data = await prepareJob(prepareData);
-            console.log('Prepare Job Response:', data);
             setTimelineData(data || []);
             // Assuming response contains jobId and customerId based on user request /jobs/{jobId}/remove/customer/{customerId}
             if (data?.jobId && data?.customerId) {
-                console.log('Setting preparedJobIds:', { jobId: data.jobId, customerId: data.customerId });
                 setPreparedJobIds({ jobId: data.jobId, customerId: data.customerId });
             } else {
                 console.warn('JobId or CustomerId missing in response:', data);
@@ -680,9 +678,9 @@ const CreateJobModal = ({ isOpen, onClose, onJobCreated, allowPaymentVerify }) =
                                             disabledDate={(current) => {
                                                 if (!current) return false;
 
-                                                // Disable past dates and today (only allow tomorrow onwards)
-                                                const isPastOrToday = current.isBefore(dayjs().endOf('day'));
-                                                if (isPastOrToday) return true;
+                                                // Disable past dates (allow today onwards)
+                                                const isPast = current.isBefore(dayjs().startOf('day'));
+                                                if (isPast) return true;
 
                                                 const dateString = current.format('YYYY-MM-DD');
                                                 const dayName = current.format('dddd');

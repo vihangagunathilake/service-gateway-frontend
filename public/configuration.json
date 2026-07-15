@@ -1,3 +1,4 @@
 {
-    "baseUrl": "http://185.182.184.228:8080/service-gateway"
+    "baseUrl": "http://localhost:8686/service-gateway",
+    "agent-app-url": "http://localhost:3001/"
 }

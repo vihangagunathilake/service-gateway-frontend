@@ -15,7 +15,22 @@ import {
     getUserPermissionAccess
 } from '../services/userService';
 
+import { getRoleNotifications } from '../services/notificationService';
+
 const UserContext = createContext();
+
+const parseJwt = (token) => {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function (c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        return null;
+    }
+};
 
 export const UserProvider = ({ children }) => {
 
@@ -23,14 +38,18 @@ export const UserProvider = ({ children }) => {
         name: 'Loading...',
         email: '',
         userType: '',
+        userTypeId: localStorage.getItem('userType') || '',
         provider: '',
         providerId: '',
         userId: '',
-        image: null
+        image: null,
+        loggedInPoint: null,
+        loggedInPointId: localStorage.getItem('servicePointId') || null
     });
 
     const [permissions, setPermissions] = useState([]);
     const [permissionAccess, setPermissionAccess] = useState([]);
+    const [notificationAccess, setNotificationAccess] = useState([]);
     const [loading, setLoading] = useState(true);
 
     const navigate = useNavigate();
@@ -69,28 +88,41 @@ export const UserProvider = ({ children }) => {
 
             setLoading(true);
 
+            // Step 1: load permissions first
             const [
-                userData,
                 userPermissions,
                 userPermissionAccess
             ] = await Promise.all([
-                getUserHeaderData(),
                 getUserPermissions(),
                 getUserPermissionAccess()
             ]);
+
+            setPermissions(userPermissions || []);
+            setPermissionAccess(userPermissionAccess || []);
+
+            // Step 2: load notification access
+            const roleNotifications = await getRoleNotifications();
+            setNotificationAccess(roleNotifications || []);
+
+            // Step 3: load header data (triggers NotificationContext via userId)
+            const userData = await getUserHeaderData();
+
+            const token = localStorage.getItem('token');
+            const decoded = parseJwt(token);
+            const tokenUserId = decoded?.user || decoded?.userId || '';
 
             setUserInfo({
                 name: userData.userName || 'User',
                 email: userData.email || '',
                 userType: userData.userType || 'User',
+                userTypeId: String(userData.userTypeId || localStorage.getItem('userType') || ''),
                 provider: userData.serviceCenter || '',
                 providerId: userData.providerId || '',
-                userId: userData.userId || userData.id || '',
-                image: userData.image || null
+                userId: tokenUserId || userData.userId || userData.id || '',
+                image: userData.image || null,
+                loggedInPoint: userData.loggedInPoint || null,
+                loggedInPointId: userData.loggedInPointId || localStorage.getItem('servicePointId') || null
             });
-
-            setPermissions(userPermissions || []);
-            setPermissionAccess(userPermissionAccess || []);
 
         } catch (error) {
 
@@ -169,6 +201,16 @@ export const UserProvider = ({ children }) => {
 
     /*
     ==================================================
+    NOTIFICATION ACCESS
+    ==================================================
+    */
+
+    const hasNotificationAccess = (notificationType) => {
+        return notificationAccess.includes(notificationType);
+    };
+
+    /*
+    ==================================================
     CONTEXT VALUE
     ==================================================
     */
@@ -177,10 +219,12 @@ export const UserProvider = ({ children }) => {
         userInfo,
         permissions,
         permissionAccess,
+        notificationAccess,
         loading,
 
         hasPermission,
         hasPermissionAccess,
+        hasNotificationAccess,
 
         refreshUser: loadUser
     };

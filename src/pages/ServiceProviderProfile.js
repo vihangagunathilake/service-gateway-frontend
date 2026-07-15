@@ -261,7 +261,7 @@ const ServiceProviderProfile = () => {
                     <div className="content-card" style={{ padding: '0', overflow: 'hidden', textAlign: 'center' }}>
 
                         {/* Cover photo portal buttons */}
-                        {coverPhotoPending && coverPhotoRect && ReactDOM.createPortal(
+                        {allowEditServiceProvider && coverPhotoPending && coverPhotoRect && ReactDOM.createPortal(
                             <>
                                 <button type="button"
                                     onClick={() => { coverPhotoFileRef.current = null; setCoverPhoto(null); setCoverPhotoFile(null); setCoverPhotoPending(false); }}
@@ -294,7 +294,7 @@ const ServiceProviderProfile = () => {
                         )}
 
                         {/* Profile image portal buttons */}
-                        {profileImagePending && profileImageRect && ReactDOM.createPortal(
+                        {allowEditServiceProvider && profileImagePending && profileImageRect && ReactDOM.createPortal(
                             <>
                                 <button type="button"
                                     onClick={() => { profileImageFileRef.current = null; setProfileImage(null); setProfileImageFile(null); setProfileImagePending(false); }}
@@ -336,7 +336,7 @@ const ServiceProviderProfile = () => {
                                 backgroundRepeat: 'no-repeat',
                                 height: '140px',
                             }} />
-                            {!coverPhotoPending && (
+                            {allowEditServiceProvider && !coverPhotoPending && (
                                 <button type="button" onClick={() => coverPhotoRef.current?.click()} style={{
                                     position: 'absolute', top: '10px', right: '10px',
                                     background: 'rgba(0,0,0,0.55)', border: 'none', borderRadius: '50%',
@@ -371,7 +371,7 @@ const ServiceProviderProfile = () => {
                                     ? <img src={profileImage} alt="Provider" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                                     : (!loading && <Building size={64} />)
                                 }
-                                {!loading && !profileImagePending && (
+                                {allowEditServiceProvider && !loading && !profileImagePending && (
                                     <button type="button" onClick={() => profileImageRef.current?.click()} style={{
                                         position: 'absolute', bottom: '0', right: '0',
                                         background: 'rgba(0,0,0,0.55)', border: 'none', borderRadius: '50%',
